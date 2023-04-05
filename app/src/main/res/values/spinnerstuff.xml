@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="spinner_category">
+        <item>LTE</item>
+        <item>WiFi</item>
+        <item>Noise</item>
+    </string-array>
+    <string-array name="spinner_time">
+        <item value="">1 min</item>
+        <item value="">5 min</item>
+        <item value="">10 min</item>
+        <item value="">30 min</item>
+        <item value="">1 h</item>
+        <item value="">6 h</item>
+        <item value="">12 h</item>
+        <item value="">24 h</item>
+    </string-array>
+</resources>

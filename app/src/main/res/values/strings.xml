@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">PRJLAM</string>
+    <string name="map">weighted map</string>
+    <string name="zIn">zoom in</string>
+    <string name="zOut">zoom out</string>
+    <string name="settings">settings</string>
+    <string name="mCategory">map categories</string>
+</resources>
