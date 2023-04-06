@@ -5,4 +5,7 @@
     <string name="zOut">zoom out</string>
     <string name="settings">settings</string>
     <string name="mCategory">map categories</string>
+    <string name="low">POOR</string>
+    <string name="medium">AVERAGE</string>
+    <string name="high">HIGH</string>
 </resources>

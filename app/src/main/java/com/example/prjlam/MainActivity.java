@@ -7,8 +7,13 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -39,6 +44,19 @@ public class MainActivity extends AppCompatActivity {
             Intent i = new Intent(getApplicationContext(), OptionActivity.class);
             mLauncher.launch(i);
         });
+        btnZout.setOnClickListener(v -> {
+            Log.d("zoomout","work!");
+        });
+        /* Create the Notification Channel */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "notificationServiceChannel";
+            String description = "Whatever";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(name.toString(), name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
         /* Spinner */
         spCat = findViewById(R.id.category);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this,
