@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,12 +43,15 @@ public class MainActivity extends AppCompatActivity {
         btnZin = findViewById(R.id.zoomIn);
         btnZout = findViewById(R.id.zoomOut);
         btnSett = findViewById(R.id.btnSettings);
-        btnSett.setOnClickListener(v -> {
-            Intent i = new Intent(getApplicationContext(), OptionActivity.class);
-            mLauncher.launch(i);
+        btnZin.setOnClickListener(v -> {
+            Log.d("zoomin","work!");
         });
         btnZout.setOnClickListener(v -> {
             Log.d("zoomout","work!");
+        });
+        btnSett.setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), OptionActivity.class);
+            mLauncher.launch(i);
         });
         /* Create the Notification Channel */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

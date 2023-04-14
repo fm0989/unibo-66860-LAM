@@ -15,4 +15,14 @@
         <item value="">12 h</item>
         <item value="">24 h</item>
     </string-array>
+    <string-array name="spinner_time_values">
+        <item value="">60</item>
+        <item value="">300</item>
+        <item value="">600</item>
+        <item value="">1800</item>
+        <item value="">3600</item>
+        <item value="">21600</item>
+        <item value="">43200</item>
+        <item value="">86400</item>
+    </string-array>
 </resources>
