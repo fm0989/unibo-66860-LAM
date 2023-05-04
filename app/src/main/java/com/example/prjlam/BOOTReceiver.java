@@ -10,7 +10,6 @@ public class BOOTReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if(Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-            Log.d("Broadcast", "work!");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(new Intent(context, GatheringService.class));//chiama servizio foreground
             } else {

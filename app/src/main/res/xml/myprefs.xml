@@ -2,9 +2,11 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/settings">
         <SwitchPreference
+            android:defaultValue="false"
             android:key="colorblind"
             android:title="Colorblind Mode" />
         <ListPreference
+            android:defaultValue="300"
             android:dialogTitle="Sampling Time"
             android:entries="@array/spinner_time"
             android:entryValues="@array/spinner_time_values"
