@@ -1,11 +1,23 @@
 <resources>
     <string name="app_name">PRJLAM</string>
     <string name="map">Weighted map</string>
-    <string name="zIn">Zoom in</string>
-    <string name="zOut">Zoom out</string>
     <string name="settings">Settings</string>
+    <string name="nodata">No data available in this area</string>
+    <string name="toofar">Zoom closer to render data</string>
+    <string name="gather">Analyze your position</string>
     <string name="mCategory">Map categories</string>
-    <string name="low">POOR</string>
+    <string name="noise">Noise</string>
+
+    <string name="poor">POOR</string>
+    <string name="good">GOOD</string>
     <string name="medium">AVERAGE</string>
-    <string name="high">HIGH</string>
+    <string name="quiet">QUIET</string>
+    <string name="loud">LOUD</string>
+
+    <string name="settdeletedb">Delete internal database</string>
+    <string name="settbg">Run app in background</string>
+    <string name="settmaxrecord">Max records per area</string>
+    <string name="settmaxrecord_summ">Max records saved in the database per map area</string>
+    <string name="settsamplingtime">Sampling Interval</string>
+    <string name="settsamplingtime_summ">Time between app information gathering</string>
 </resources>

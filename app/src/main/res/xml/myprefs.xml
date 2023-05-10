@@ -3,15 +3,21 @@
     <PreferenceCategory android:title="@string/settings">
         <SwitchPreference
             android:defaultValue="false"
-            android:key="colorblind"
-            android:title="Colorblind Mode" />
+            android:key="bgsampling"
+            android:title="@string/settbg"/>
         <ListPreference
             android:defaultValue="300"
-            android:dialogTitle="Sampling Time"
+            android:dialogTitle="@string/settsamplingtime"
             android:entries="@array/spinner_time"
             android:entryValues="@array/spinner_time_values"
             android:key="sTime"
-            android:summary="Time between app information gathering"
-            android:title="Sampling Time" />
+            android:summary="@string/settsamplingtime_summ"
+            android:title="@string/settsamplingtime" />
+        <EditTextPreference
+            android:defaultValue="4"
+            android:dialogTitle="@string/settmaxrecord"
+            android:key="maxrecorddata"
+            android:summary="@string/settmaxrecord_summ"
+            android:title="@string/settmaxrecord" />
     </PreferenceCategory>
 </PreferenceScreen>

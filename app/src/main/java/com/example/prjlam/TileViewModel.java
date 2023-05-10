@@ -25,9 +25,11 @@ public class TileViewModel extends AndroidViewModel {
     MutableLiveData<List<MapTile>> getSearchedTiles(){
         return searchedMapTiles;
     }
-    public void searchMapTiles(double minlatitude, double minlongitude, double maxlatitude, double maxlongitude){
-        mRepository.searchMapTiles(minlatitude, minlongitude, maxlatitude, maxlongitude);
+    public void searchMapTiles(int type,double minlatitude, double minlongitude, double maxlatitude, double maxlongitude){
+        mRepository.searchMapTiles(type, minlatitude, minlongitude, maxlatitude, maxlongitude);
     }
-    public void insertTiles(List<MapTile> tiles){this.mRepository.insertTiles(tiles);}
+    public void insertTile(MapTile tile){this.mRepository.insertTile(tile);}
+    public void deleteTile(MapTile tile){this.mRepository.deleteTile(tile);}
+    public void deleteAll(){this.mRepository.deleteAll();}
 
 }

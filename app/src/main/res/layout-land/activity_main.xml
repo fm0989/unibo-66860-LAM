@@ -4,136 +4,138 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="8dp"
     tools:context=".MainActivity">
 
-    <com.google.android.gms.maps.MapView
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/mapView"
+        class="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
         android:contentDescription="@string/map"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/dataStatus"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
+    <TextView
+        android:id="@+id/dataStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent=".5" />
+        android:layout_weight="1"
+        android:text="@string/nodata"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent=".6" />
+        app:layout_constraintGuide_percent="0.65" />
 
-    <ImageButton
-        android:id="@+id/zoomIn"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/zIn"
-        android:scaleType="fitCenter"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
-        app:layout_constraintEnd_toEndOf="@+id/zoomOut"
-        app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toBottomOf="@+id/zoomOut"
-        app:srcCompat="@drawable/zoomin" />
-
-    <ImageButton
-        android:id="@+id/zoomOut"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/zOut"
-        android:scaleType="fitCenter"
-        app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/zoomout" />
     <ImageButton
         android:id="@+id/btnSettings"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="5dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:background="#00FFFFFF"
         android:contentDescription="@string/settings"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/category"
-        app:srcCompat="@drawable/settings"
-        android:scaleType="fitCenter"/>
+        app:srcCompat="@drawable/settings" />
 
     <Spinner
         android:id="@+id/category"
         android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginEnd="32dp"
+        android:layout_height="0dp"
         android:contentDescription="@string/mCategory"
+        android:entries="@array/spinner_category"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnSettings"
-        app:layout_constraintStart_toStartOf="@+id/guideline2" />
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toTopOf="@+id/btnSettings" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:gravity="center"
         android:orientation="vertical"
+        android:paddingStart="50dp"
+        android:paddingEnd="50dp"
         app:layout_constraintBottom_toTopOf="@+id/category"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/zoomOut"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/btnGather"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Legend" />
+            android:layout_marginTop="4dp"
+            android:layout_weight="1"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:text="@string/gather" />
 
         <Button
-            android:id="@+id/btnP"
-            android:layout_width="120dp"
-            android:layout_height="70dp"
-            android:backgroundTint="#4CAF50"
+            android:id="@+id/btnSX"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/good"
+            android:contentDescription="@string/good"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
             android:shadowColor="#000000"
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="10"
-            android:text="@string/low"
+            android:text="@string/good"
             android:textSize="16sp"
             android:textStyle="bold" />
 
         <Button
-            android:id="@+id/btnH"
-            android:layout_width="120dp"
-            android:layout_height="70dp"
-            android:layout_margin="8dp"
-            android:backgroundTint="#B40000"
-            android:shadowColor="#000000"
-            android:shadowDx="0"
-            android:shadowDy="0"
-            android:shadowRadius="10"
-            android:text="@string/high"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/btnA"
-            android:layout_width="120dp"
-            android:layout_height="70dp"
+            android:id="@+id/btnMD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:backgroundTint="#FFC107"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
             android:shadowColor="#000000"
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="10"
             android:text="@string/medium"
-            android:textAlignment="viewStart"
             android:textSize="16sp"
             android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnDX"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/poor"
+            android:contentDescription="@string/poor"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:shadowColor="#000000"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="10"
+            android:text="@string/poor"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

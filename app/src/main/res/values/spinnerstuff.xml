@@ -3,7 +3,12 @@
     <string-array name="spinner_category">
         <item>LTE</item>
         <item>AlmaWiFi</item>
-        <item>Noise</item>
+        <item>@string/noise</item>
+    </string-array>
+    <string-array name="spinner_category_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
     <string-array name="spinner_time">
         <item>1 min</item>
