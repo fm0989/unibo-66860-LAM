@@ -8,9 +8,14 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="poor">#B40000</color>
-    <color name="good">#4CAF50</color>
-    <color name="medium">#FFC107</color>
-    <color name="quiet">#4CAF50</color>
-    <color name="loud">#B40000</color>
+    <color name="poor">#FFB40000</color>
+    <color name="poorT">#33B40000</color>
+    <color name="good">#FF4CAF50</color>
+    <color name="goodT">#334CAF50</color>
+    <color name="medium">#FFFFC107</color>
+    <color name="mediumT">#33FFC107</color>
+    <color name="quiet">#FF4CAF50</color>
+    <color name="quietT">#334CAF50</color>
+    <color name="loud">#FFB40000</color>
+    <color name="loudT">#33B40000</color>
 </resources>

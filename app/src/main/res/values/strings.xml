@@ -1,10 +1,14 @@
 <resources>
     <string name="app_name">PRJLAM</string>
+    <string name="gather_action">com.example.prjlam.GATHER_DATA</string>
+    <string name="reset_alarm_action">com.example.prjlam.RESET_ALARM</string>
+
     <string name="map">Weighted map</string>
     <string name="settings">Settings</string>
     <string name="nodata">No data available in this area</string>
     <string name="toofar">Zoom closer to render data</string>
-    <string name="gather">Analyze your position</string>
+    <string name="gather_on">Analyze your position</string>
+    <string name="gather_off">Gathering data</string>
     <string name="mCategory">Map categories</string>
     <string name="noise">Noise</string>
 
@@ -15,6 +19,7 @@
     <string name="loud">LOUD</string>
 
     <string name="settdeletedb">Delete internal database</string>
+    <string name="settloaddb">Load database from file</string>
     <string name="settbg">Run app in background</string>
     <string name="settmaxrecord">Max records per area</string>
     <string name="settmaxrecord_summ">Max records saved in the database per map area</string>

@@ -1,9 +1,7 @@
-package com.example.prjlam;
+package com.example.prjlam.db;
 
 import android.app.Application;
-import android.util.Log;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
@@ -18,13 +16,18 @@ public class MapRepository {
         mMapTileDao = db.mapTileDao();
     }
 
-    public MutableLiveData<List<MapTile>> getSearchResults() {
+    MutableLiveData<List<MapTile>> getSearchResults() {
         return searchedMapTiles;
     }
     // LiveData queries within Room are automatically executed in background
     void searchMapTiles(int type,double minlatitude, double minlongitude, double maxlatitude, double maxlongitude) {
         MapRoomDatabase.databaseWriteExecutor.execute(() -> {
            searchedMapTiles.postValue(mMapTileDao.getTiles(type, minlatitude, minlongitude, maxlatitude, maxlongitude));
+        });
+    }
+    void searchPacmanMapTiles(int type,double minlatitude, double minlongitude, double maxlatitude, double maxlongitude) {
+        MapRoomDatabase.databaseWriteExecutor.execute(() -> {
+           searchedMapTiles.postValue(mMapTileDao.getPacmanPointTiles(type, minlatitude, minlongitude, maxlatitude, maxlongitude));
         });
     }
     // This does not involve LiveData, therefore we need to explicitly run a separate thread

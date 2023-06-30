@@ -80,7 +80,7 @@
             android:layout_weight="1"
             android:paddingTop="16dp"
             android:paddingBottom="16dp"
-            android:text="@string/gather" />
+            android:text="@string/gather_on" />
 
         <Button
             android:id="@+id/btnSX"

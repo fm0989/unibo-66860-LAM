@@ -1,9 +1,8 @@
-package com.example.prjlam;
+package com.example.prjlam.db;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.PrimaryKey;
 
 //import com.google.gson.annotations.SerializedName;
 
@@ -23,15 +22,15 @@ public class MapTile {
     @ColumnInfo(name = "type")
     public int type;
     @ColumnInfo(name = "date")
-    public int date;
+    public long date;
 
-    public MapTile(@NonNull double latitude,@NonNull double longitude,@NonNull int level,@NonNull int type,@NonNull int date)
+    public MapTile(@NonNull double latitude,@NonNull double longitude,@NonNull int level,@NonNull int type,@NonNull long date)
     {this.latitude = latitude;this.longitude = longitude;this.level = level;this.type=type;this.date=date;}
     public double[] getMapTileCoords(){double[] c = {this.latitude, this.longitude};return c;}
     public int getMapTileLevel(){return this.level;}
     public void setMapTileLevel(int level){this.level = level;}
     public int getMapTileType(){return this.type;}
-    public void setMapTileType(int type){this.type = date;}
-    public int getMapTileDate(){return this.date;}
+    public void setMapTileType(int type){this.type = type;}
+    public long getMapTileDate(){return this.date;}
     public void setMapTileDate(int date){this.date = date;}
 }

@@ -5,11 +5,9 @@
             android:defaultValue="false"
             android:key="bgsampling"
             android:title="@string/settbg"/>
-        <ListPreference
-            android:defaultValue="300"
+        <EditTextPreference
+            android:defaultValue="15"
             android:dialogTitle="@string/settsamplingtime"
-            android:entries="@array/spinner_time"
-            android:entryValues="@array/spinner_time_values"
             android:key="sTime"
             android:summary="@string/settsamplingtime_summ"
             android:title="@string/settsamplingtime" />

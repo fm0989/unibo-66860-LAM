@@ -55,6 +55,7 @@
         android:layout_height="60dp"
         android:layout_marginEnd="32dp"
         android:contentDescription="@string/mCategory"
+        android:entries="@array/spinner_category"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnSettings"
         app:layout_constraintStart_toStartOf="parent" />
@@ -65,7 +66,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="12dp"
         android:paddingBottom="12dp"
-        android:text="@string/gather"
+        android:text="@string/gather_on"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline" />
