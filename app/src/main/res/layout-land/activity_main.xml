@@ -42,6 +42,7 @@
         android:id="@+id/btnSettings"
         android:layout_width="60dp"
         android:layout_height="60dp"
+        android:layout_marginBottom="16dp"
         android:background="#00FFFFFF"
         android:contentDescription="@string/settings"
         android:scaleType="fitCenter"
@@ -55,10 +56,19 @@
         android:layout_height="0dp"
         android:contentDescription="@string/mCategory"
         android:entries="@array/spinner_category"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/btnSettings"
         app:layout_constraintEnd_toStartOf="@+id/btnSettings"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toTopOf="@+id/btnSettings" />
+
+    <TextView
+        android:id="@+id/categoryTitle3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/mCategory"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/category"
+        app:layout_constraintTop_toBottomOf="@+id/category" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -78,9 +88,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:layout_weight="1"
+            android:backgroundTint="@color/purple_500"
             android:paddingTop="16dp"
             android:paddingBottom="16dp"
-            android:text="@string/gather_on" />
+            android:text="@string/gather_on"
+            android:textSize="14sp"
+            app:cornerRadius="5dp" />
 
         <Button
             android:id="@+id/btnSX"
@@ -98,8 +111,10 @@
             android:shadowDy="0"
             android:shadowRadius="10"
             android:text="@string/good"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:cornerRadius="5dp" />
 
         <Button
             android:id="@+id/btnMD"
@@ -114,8 +129,10 @@
             android:shadowDy="0"
             android:shadowRadius="10"
             android:text="@string/medium"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:cornerRadius="5dp" />
 
         <Button
             android:id="@+id/btnDX"
@@ -133,8 +150,10 @@
             android:shadowDy="0"
             android:shadowRadius="10"
             android:text="@string/poor"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:cornerRadius="5dp" />
 
     </LinearLayout>
 

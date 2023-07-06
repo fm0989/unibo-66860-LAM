@@ -46,4 +46,9 @@ public class MapRepository {
             mMapTileDao.deleteAll();
         });
     }
+    void deleteType(int type){
+        MapRoomDatabase.databaseWriteExecutor.execute(() -> {
+            mMapTileDao.deleteType(type);
+        });
+    }
 }

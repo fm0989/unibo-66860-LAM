@@ -10,30 +10,48 @@
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/categoryDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="24dp"
+                android:layout_weight="2"
+                android:contentDescription="@string/mCategory"
+                android:entries="@array/spinner_category"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnSettings"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Button
+                android:id="@+id/btnDeletedb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/settdeletedb" />
+        </LinearLayout>
+
         <Button
             android:id="@+id/btnLoaddb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="5dp"
             android:text="@string/settloaddb" />
 
-        <Button
-            android:id="@+id/btnDeletedb"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:text="@string/settdeletedb" />
     </LinearLayout>
 
     <androidx.fragment.app.FragmentContainerView
@@ -45,5 +63,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/linearLayout" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/goBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|bottom"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="@string/back"
+        android:rotation="180"
+        android:tint="#FFFFFFFF"
+        app:backgroundTint="@color/icongreen"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:rippleColor="@color/icongreen"
+        app:srcCompat="@drawable/ic_arrow"
+        app:tint="#FFFFFFFF" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

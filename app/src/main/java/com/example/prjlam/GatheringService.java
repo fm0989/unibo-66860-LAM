@@ -16,6 +16,9 @@ import android.location.Location;
 import android.media.MediaRecorder;
 import android.net.ConnectivityManager;
 import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -31,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 
 import com.example.prjlam.db.MapTile;
 import com.example.prjlam.db.TilesViewModel;
@@ -105,13 +109,17 @@ public class GatheringService extends Service {
                 Log.e("gatherservice", "FATTO TUTTO!");
                 //query db
                 dataGathered.forEach((type,v) -> {
-                    mTilesViewModel.insertTile(new MapTile(customSizeTile(location.getLatitude(), true),customSizeTile(location.getLongitude(), false), v, type, System.currentTimeMillis()));
+                    mTilesViewModel.insertTile(new MapTile(customSizeTile(location.getLatitude(), true),
+                                                            customSizeTile(location.getLongitude(), false),
+                                                            v,
+                                                            type,
+                                                            System.currentTimeMillis()));
                     Log.d("inserted data", "type "+String.valueOf(type)+" value "+String.valueOf(v));
                 });
                 mRunning = false;
                 stopSelf();
                 handler.post(() -> {//Cose da fare in UI
-                    Toast.makeText(getApplicationContext(),"BACKGROUND SERVICE ENDED", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(),"BACKGROUND SERVICE ENDED", Toast.LENGTH_SHORT).show();
                 });
             }).start();
 ;
@@ -126,8 +134,10 @@ public class GatheringService extends Service {
             for (CellInfo cellInfo : cellInfos) {
                 if (cellInfo instanceof CellInfoLte) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        Log.e("gather from this", String.valueOf(cellInfo.getCellSignalStrength().getLevel()));
                         return cellInfo.getCellSignalStrength().getLevel() * 25;
                     }
+                    Log.e("gather from this", String.valueOf(telephonyManager.getSignalStrength().getLevel()));
                     return telephonyManager.getSignalStrength().getLevel() * 25;
                 }
             }
@@ -135,16 +145,18 @@ public class GatheringService extends Service {
         return -1;
     }
     private int gatherWifi(){
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
-            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            Network mNetwork = connectivityManager.getActiveNetwork();
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
             WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-            if (mNetwork != null) {
+
+            if (wifiManager.getWifiState() != WifiManager.WIFI_STATE_DISABLED) {
+                String name = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("myssid", "");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    WifiInfo t = (WifiInfo) connectivityManager.getNetworkCapabilities(mNetwork).getTransportInfo();
-                    if (t != null)
-                        return wifiManager.calculateSignalLevel(t.getRssi()) * 25;
-                } else {
+                    if (name.equals("") || wifiManager.getConnectionInfo().getSSID().substring(1, wifiManager.getConnectionInfo().getSSID().length() - 1).equals(name)) {
+                        return wifiManager.calculateSignalLevel(wifiManager.getConnectionInfo().getRssi()) * 25;
+                    }
+                }
+                else if(name.equals("") || wifiManager.getConnectionInfo().getSSID().substring(1, wifiManager.getConnectionInfo().getSSID().length() - 1).equals(name)){
                     return wifiManager.calculateSignalLevel(wifiManager.getConnectionInfo().getRssi(), 4) * 25 + 25;
                 }
             }
@@ -158,7 +170,7 @@ public class GatheringService extends Service {
             mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
             mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            mediaRecorder.setOutputFile("/dev/null/");
+            mediaRecorder.setOutputFile(getExternalCacheDir()+"/ampltest.3gp");
             Timer timer = new Timer();
             RecorderTask rt = new RecorderTask(mediaRecorder);
             timer.scheduleAtFixedRate(rt, 0, 500);
@@ -178,7 +190,7 @@ public class GatheringService extends Service {
                 e.printStackTrace();
             }
             mediaRecorder.release();
-            return maxamp;
+            return maxamp-10;//
         }
         return -1;
     }
@@ -189,8 +201,12 @@ public class GatheringService extends Service {
             this.recorder = recorder;
         }
         public void run() {
-            int amplitude = recorder.getMaxAmplitude();
-            amplitudeDb = (int) (20 * Math.log10((double)Math.abs(amplitude)));
+            try {
+                int amplitude = recorder.getMaxAmplitude()+1;
+                amplitudeDb = (int) (20 * Math.log10((double) Math.abs(amplitude)));
+            } catch (IllegalStateException e){
+                Log.e("Recorder Timer","maxamplitude crash");
+            }
         }
         public int getAmplitudeDb(){return amplitudeDb;}
     }

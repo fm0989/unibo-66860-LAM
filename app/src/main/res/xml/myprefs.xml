@@ -17,5 +17,19 @@
             android:key="maxrecorddata"
             android:summary="@string/settmaxrecord_summ"
             android:title="@string/settmaxrecord" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/settssid"
+            android:key="myssid"
+            android:summary="@string/settssid_summ"
+            android:title="@string/settssid" />
+        <PreferenceCategory android:title="@string/notification">
+            <EditTextPreference
+                android:defaultValue="0"
+                android:dialogTitle="@string/settreport"
+                android:key="myreport"
+                android:summary="@string/settreport_summ"
+                android:title="@string/settreport" />
+        </PreferenceCategory>
     </PreferenceCategory>
 </PreferenceScreen>

@@ -17,6 +17,8 @@ public interface MapTileDao {
     void deleteTile(MapTile tile);
     @Query("DELETE FROM map_tiles_table")
     void deleteAll();
+    @Query("DELETE FROM map_tiles_table WHERE type=:type")
+    void deleteType(int type);
     @Query("SELECT * FROM map_tiles_table WHERE type=:type AND latitude>=:minlatitude AND latitude<=:maxlatitude AND longitude>=:minlongitude AND longitude<=:maxlongitude ORDER BY date DESC")
     List<MapTile> getTiles(int type,double minlatitude, double minlongitude, double maxlatitude, double maxlongitude);
     @Query("SELECT * FROM map_tiles_table WHERE type=:type AND latitude>=:minlatitude AND latitude<=:maxlatitude AND ((longitude>=:minlongitude AND longitude<180) OR " +

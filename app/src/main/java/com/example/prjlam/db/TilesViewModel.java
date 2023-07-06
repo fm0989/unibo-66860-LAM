@@ -32,5 +32,6 @@ public class TilesViewModel extends AndroidViewModel {
     public void insertTile(MapTile tile){this.mRepository.insertTile(tile);}
     public void deleteTile(MapTile tile){this.mRepository.deleteTile(tile);}
     public void deleteAll(){this.mRepository.deleteAll();}
+    public void deleteType(int type){this.mRepository.deleteType(type);}
 
 }

@@ -92,7 +92,7 @@ public class LocationService extends Service {
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult.getLastLocation() == null) {
                     Log.e("locationresult", "VUOTO!");
-                    return;
+                    stopSelf();
                 }
                 Log.e("LOCAT SERVICE","loc " + locationResult.getLastLocation().toString());
                 Log.e("LOCAT SERVICE","CHIAMATO GATHER");
@@ -114,7 +114,7 @@ public class LocationService extends Service {
         Notification notification = new NotificationCompat.Builder(this, (String) BACKGROUND_NOTIFICATION_NAME)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle("Background data gathering")
-                .setContentText("Service is gathering Wifi,Lte and noise data")
+                .setContentText("Service is collecting location coordinates")
                 .setContentIntent(pendingIntent)
                 .build();
         startForeground(1, notification);
@@ -136,9 +136,10 @@ public class LocationService extends Service {
                 task.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
                     @Override
                     public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            Log.e("onsuccesslistener", "NO PERMESSI!");
-                            return;
+                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED ||
+                                ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+                            Log.e("location onsuccesslistener", "NO PERMESSI!");
+                            stopSelf();
                         }
                         fusedLocationClient.requestLocationUpdates(locationRequest,
                                 locationCallback,
