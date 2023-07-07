@@ -21,7 +21,7 @@ public abstract class Utils {
     public final static double halfHeight = 180 / NTILES / 2;//180 LAT
 
     public static final CharSequence BACKGROUND_NOTIFICATION_NAME = "BackgroundServiceChannel";
-
+    public static final CharSequence REPORT_NOTIFICATION_NAME = "NewAreasReportChannel";
     public static final int MY_LOCATION_PERMISSION_REQUEST_CODE = 1;
     public static final int NETWORK_PERMISSION_REQUEST_CODE = 2;
     public static final int WIFI_PERMISSION_REQUEST_CODE = 3;

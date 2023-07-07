@@ -10,6 +10,7 @@ public class MapRepository {
 
     private MapTileDao mMapTileDao;
     private MutableLiveData<List<MapTile>> searchedMapTiles = new MutableLiveData<>();
+    private MutableLiveData<List<MapTile>> searchedRecentMapTiles = new MutableLiveData<>();
 
     MapRepository (Application app) {
         MapRoomDatabase db = MapRoomDatabase.getDatabase(app);
@@ -18,6 +19,9 @@ public class MapRepository {
 
     MutableLiveData<List<MapTile>> getSearchResults() {
         return searchedMapTiles;
+    }
+    MutableLiveData<List<MapTile>> getSearchRecentResults() {
+        return searchedRecentMapTiles;
     }
     // LiveData queries within Room are automatically executed in background
     void searchMapTiles(int type,double minlatitude, double minlongitude, double maxlatitude, double maxlongitude) {
@@ -49,6 +53,11 @@ public class MapRepository {
     void deleteType(int type){
         MapRoomDatabase.databaseWriteExecutor.execute(() -> {
             mMapTileDao.deleteType(type);
+        });
+    }
+    void getNewDiscoveredTiles(long starting){
+        MapRoomDatabase.databaseWriteExecutor.execute(() -> {
+            searchedRecentMapTiles.postValue(mMapTileDao.getNewDiscoveredTiles(starting));
         });
     }
 }

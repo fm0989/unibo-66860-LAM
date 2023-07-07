@@ -24,4 +24,6 @@ public interface MapTileDao {
     @Query("SELECT * FROM map_tiles_table WHERE type=:type AND latitude>=:minlatitude AND latitude<=:maxlatitude AND ((longitude>=:minlongitude AND longitude<180) OR " +
             "(longitude<=:maxlongitude AND longitude>-180)) ORDER BY date DESC")
     List<MapTile> getPacmanPointTiles(int type,double minlatitude, double minlongitude, double maxlatitude, double maxlongitude);
+    @Query("SELECT * FROM map_tiles_table as A WHERE NOT EXISTS (SELECT * FROM map_tiles_table as B WHERE A.longitude=B.longitude AND A.latitude=B.latitude AND date < :starting)")
+    List<MapTile> getNewDiscoveredTiles(long starting);
 }

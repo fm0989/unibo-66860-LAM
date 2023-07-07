@@ -1,6 +1,7 @@
 package com.example.prjlam;
 
 import static com.example.prjlam.Utils.BACKGROUND_PERMISSION_REQUEST_CODE;
+import static com.example.prjlam.Utils.isBackgroundLocationGranted;
 import static com.example.prjlam.Utils.requestMyPermission;
 
 import androidx.activity.result.ActivityResult;
@@ -10,6 +11,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
@@ -45,23 +48,32 @@ public class OptionActivity extends AppCompatActivity implements AdapterView.OnI
     SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-
-            if(key.equals("bgsampling")){
-                if(sharedPreferences.getBoolean(key,false) == true) {
-                    Log.d("preferences", "changed" + "  " + key + "  " + sharedPreferences.getBoolean(key, false));
-                    if (!Utils.isBackgroundLocationGranted) {
-                        Utils.requestMyPermission(OptionActivity.this, BACKGROUND_PERMISSION_REQUEST_CODE, false);
-                        sharedPreferences.edit().putBoolean("bgsampling", false).apply();
-                    } else{
-                        //lancio bg receiver
-                        Intent i = new Intent(getApplicationContext(), BackgroundReceiver.class).setAction(getApplicationContext().getResources().getString(R.string.reset_alarm_action));
-                        sendBroadcast(i);
+                if (key.equals("bgsampling")) {
+                    if (sharedPreferences.getBoolean(key, false) == true) {
+                        Log.d("preferences", "changed" + "  " + key + "  " + sharedPreferences.getBoolean(key, false));
+                        if (!Utils.isBackgroundLocationGranted) {
+                            Utils.requestMyPermission(OptionActivity.this, BACKGROUND_PERMISSION_REQUEST_CODE, false);
+                            sharedPreferences.edit().putBoolean("bgsampling", false).apply();
+                        } else {
+                            //lancio bg receiver
+                            Intent i = new Intent(getApplicationContext(), BackgroundReceiver.class).setAction(getApplicationContext().getResources().getString(R.string.reset_alarm_action));
+                            sendBroadcast(i);
+                        }
+                    }
+                } else if (key.equals("daysreport")) {
+                    try {
+                        if(Integer.parseInt(sharedPreferences.getString(key,"0")) > 0){
+                            long reportT = System.currentTimeMillis() + 86400000L * Long.parseLong(sharedPreferences.getString("daysreport", "0"));
+                            defaultPreferences.edit().putLong("reportTime", reportT).apply();
+                        }else {
+                            defaultPreferences.edit().putLong("reportTime", 0L).apply();
+                        }
+                    } catch (NumberFormatException nfe) {
+                        defaultPreferences.edit().putString("daysreport", "0").apply();
+                        defaultPreferences.edit().putLong("reportTime", 0L).apply();
                     }
                 }
-            }else if(key.equals("myreport")){
-                long reportT = System.currentTimeMillis() + 86400000L * Long.parseLong(sharedPreferences.getString("myreport", "0"));
             }
-        }
     };
 
     ActivityResultLauncher<Intent> mLauncher = registerForActivityResult(//API di activity result sistema piu' sicuro a contratto
@@ -120,6 +132,7 @@ public class OptionActivity extends AppCompatActivity implements AdapterView.OnI
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.e("bg PERMISSION res", "LANCIO BROADCAST");
         Utils.setGrantedPermission(requestCode, permissions, grantResults);
         if (Utils.isBackgroundLocationGranted) {
             defaultPreferences.edit().putBoolean("bgsampling",true).apply();

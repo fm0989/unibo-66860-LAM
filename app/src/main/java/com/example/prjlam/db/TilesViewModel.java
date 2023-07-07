@@ -12,17 +12,20 @@ public class TilesViewModel extends AndroidViewModel {
 
     private MapRepository mRepository;
     private MutableLiveData<List<MapTile>> searchedMapTiles;
+    private MutableLiveData<List<MapTile>> searchedRecentMapTiles;
 
 
     public TilesViewModel(@NonNull Application application) {
         super(application);
         mRepository = new MapRepository(application);
         searchedMapTiles = mRepository.getSearchResults();
+        searchedRecentMapTiles = mRepository.getSearchRecentResults();
     }
 
     public MutableLiveData<List<MapTile>> getSearchedTiles(){
         return searchedMapTiles;
     }
+    public MutableLiveData<List<MapTile>> getSearchedRecentTiles(){ return searchedRecentMapTiles; }
     public void searchMapTiles(int type,double minlatitude, double minlongitude, double maxlatitude, double maxlongitude){
         mRepository.searchMapTiles(type, minlatitude, minlongitude, maxlatitude, maxlongitude);
     }
@@ -33,5 +36,6 @@ public class TilesViewModel extends AndroidViewModel {
     public void deleteTile(MapTile tile){this.mRepository.deleteTile(tile);}
     public void deleteAll(){this.mRepository.deleteAll();}
     public void deleteType(int type){this.mRepository.deleteType(type);}
+    public void getNewDiscoveredTiles(long starting){this.mRepository.getNewDiscoveredTiles(starting);}
 
 }

@@ -4,11 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
-//import com.google.gson.annotations.SerializedName;
-
 @Entity(tableName = "map_tiles_table",primaryKeys = {"latitude","longitude","type","date"})
 public class MapTile {
-    //@SerializedName("title")  retrofit
     @NonNull
     @ColumnInfo(name = "latitude")
     public double latitude;

@@ -2,12 +2,12 @@ package com.example.prjlam;
 
 import static com.example.prjlam.Utils.BACKGROUND_PERMISSION_REQUEST_CODE;
 import static com.example.prjlam.Utils.MY_LOCATION_PERMISSION_REQUEST_CODE;
+import static com.example.prjlam.Utils.REPORT_NOTIFICATION_NAME;
 import static com.example.prjlam.Utils.customSizeTile;
 import static com.example.prjlam.Utils.halfHeight;
 import static com.example.prjlam.Utils.halfWidth;
 import static com.example.prjlam.Utils.isAudioGranted;
 import static com.example.prjlam.Utils.isBackgroundLocationGranted;
-import static com.example.prjlam.Utils.isLocationGranted;
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_TERRAIN;
 
 import androidx.activity.result.ActivityResult;
@@ -17,14 +17,17 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -87,27 +90,13 @@ public class MainActivity extends AppCompatActivity
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-                    Log.d("main", "tornato da opzioni");
                     preferenceInit();
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-
-                    }
-                    //
                 }
             });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /* Create the Notification Channel */
-        CharSequence name = "notificationServiceChannel";
-        String description = "Whatever";
-        int importance = NotificationManager.IMPORTANCE_DEFAULT;
-        NotificationChannel channel = new NotificationChannel(name.toString(), name, importance);
-        channel.setDescription(description);
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
-        notificationManager.createNotificationChannel(channel);
-
         setContentView(R.layout.activity_main);
         btnSX = findViewById(R.id.btnSX);
         btnMD = findViewById(R.id.btnMD);
@@ -122,6 +111,7 @@ public class MainActivity extends AppCompatActivity
         changeMapType(0);
         /* SET PREFERENCES */
         Utils.checkPermissions(this);
+        PreferenceManager.setDefaultValues(this, R.xml.myprefs, false);
         defaultPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         preferenceInit();
 
@@ -158,12 +148,12 @@ public class MainActivity extends AppCompatActivity
             queryMapData();
         });
 
-        /* Start gathering info's */
+        /* Setting data gathering  */
         btnGather.setOnClickListener(v -> {
             // check permessi
             Utils.checkPermissions(this);
             if (!Utils.isLocationGranted) {
-                Toast.makeText(this, "THIS DONT HAPPEN", Toast.LENGTH_SHORT).show();
+                //this wont happen
                 return;
             }
             if(!isAudioGranted) {
@@ -219,7 +209,57 @@ public class MainActivity extends AppCompatActivity
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapView);
         mapFragment.getMapAsync(this);
+        /* notifiche */
+        checkReport();
+    }
 
+    private void checkReport() {
+        /* Create Report Notification Channel */
+        String description = "Notification of the periodic report on the analysis of the new areas";
+        NotificationChannel channel = new NotificationChannel(REPORT_NOTIFICATION_NAME.toString(), REPORT_NOTIFICATION_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+        channel.setDescription(description);
+        NotificationManager notificationManager = this.getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
+        //NOTIFICA REPORT SE IL GIORNO E' CORRETTO
+        int t = 0;
+        try {
+            Integer.parseInt(defaultPreferences.getString("daysreport", "0"));
+        } catch (NumberFormatException nfe) {
+            defaultPreferences.edit().putString("daysreport", "0").apply();
+            defaultPreferences.edit().putLong("reportTime", 0L).apply();
+        }
+        if(t > 0) {
+            mTilesViewModel.getSearchedRecentTiles().observe(this, new Observer<List<MapTile>>() {
+                @Override
+                public void onChanged(List<MapTile> mapTiles) {
+                    List<LatLng> coords = new ArrayList<>();
+                    //raggruppa dati
+                    for (MapTile tile : mapTiles) {
+                        if(!coords.contains(new LatLng(tile.latitude,tile.longitude))){
+                            coords.add(new LatLng(tile.latitude,tile.longitude));
+                        }
+                    }
+                    //lancia notifica
+                    Intent reportIntent = new Intent(getApplicationContext(), BackgroundReceiver.class);
+                    reportIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    reportIntent.putExtra("CALLER", "notificationFromBroadcast");
+                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),0, reportIntent, PendingIntent.FLAG_IMMUTABLE);
+                    Notification notification = new NotificationCompat.Builder(getApplicationContext(), (String) REPORT_NOTIFICATION_NAME)
+                            .setSmallIcon(R.drawable.ic_launcher_foreground)
+                            .setContentTitle("Report of data collected from new areas")
+                            .setContentText("Service has collected "+coords.size()+" new areas!")
+                            .setContentIntent(pendingIntent)
+                            .build();
+                    notificationManager.notify(3,notification);
+                    defaultPreferences.edit().putLong("reportTime", System.currentTimeMillis()+86400000L*Integer.parseInt(defaultPreferences.getString("daysreport", "0"))).apply();
+                }
+            });
+            long nowT = System.currentTimeMillis();
+            long reportT = defaultPreferences.getLong("reportTime", 0);
+            if (nowT > reportT) {//se la data e' stata superata
+                mTilesViewModel.getNewDiscoveredTiles(reportT);
+            }
+        }
     }
 
     private void changeMapType(int type) {
@@ -269,8 +309,11 @@ public class MainActivity extends AppCompatActivity
                     //lancio bg receiver
                     Intent i = new Intent(getApplicationContext(), BackgroundReceiver.class).setAction(getApplicationContext().getResources().getString(R.string.reset_alarm_action));
                     sendBroadcast(i);
-                    Log.e("option", "permesso");
                 }
+            }
+            if(mypref.get("reportTime") == null){//primo avvio dell'app
+                long reportT = System.currentTimeMillis() + 86400000L * Long.parseLong(defaultPreferences.getString("daysreport", "0"));
+                defaultPreferences.edit().putLong("reportTime", reportT).apply();
             }
         } catch (ClassCastException | NullPointerException e) {
             e.printStackTrace();
@@ -284,7 +327,6 @@ public class MainActivity extends AppCompatActivity
         // Override the default content description on the view, for accessibility mode.
         map = googleMap;
         map.getUiSettings().setZoomControlsEnabled(true);
-        //googleMap.setContentDescription(getString(R.string.polygon_demo_description));
         map.setIndoorEnabled(false);
         map.setBuildingsEnabled(false);
         map.setTrafficEnabled(false);
@@ -297,12 +339,10 @@ public class MainActivity extends AppCompatActivity
             Utils.requestMyPermission(this, MY_LOCATION_PERMISSION_REQUEST_CODE, false);
         }
         // Move the camera
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(44.49840, 11.35541), 16));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(44.49840, 11.35541), 12));
         googleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
-            public void onCameraIdle() {
-                queryMapData();
-            }
+            public void onCameraIdle() { queryMapData(); }
         });
     }
 
@@ -311,18 +351,9 @@ public class MainActivity extends AppCompatActivity
             return;
         }
         map.clear();
-        if (map.getCameraPosition().zoom >= 12) {//12?
+        if (map.getCameraPosition().zoom >= 12) {
             areaStatus.setText("");
             VisibleRegion mapView = map.getProjection().getVisibleRegion();
-            /*
-            map.addPolygon(new PolygonOptions()
-                    .addAll(Arrays.asList(new LatLng(map.getCameraPosition().target.latitude - halfHeight, map.getCameraPosition().target.longitude - halfWidth),
-                            new LatLng(map.getCameraPosition().target.latitude - halfHeight, map.getCameraPosition().target.longitude + halfWidth),
-                            new LatLng(map.getCameraPosition().target.latitude + halfHeight, map.getCameraPosition().target.longitude + halfWidth),
-                            new LatLng(map.getCameraPosition().target.latitude + halfHeight, map.getCameraPosition().target.longitude - halfWidth)))
-                    .fillColor(evaluate(70))
-                    .strokeWidth(0));
-            */
             if (mapView.nearLeft.latitude > mapView.farRight.latitude) {
                 return;
             }
@@ -330,7 +361,6 @@ public class MainActivity extends AppCompatActivity
             double BLlon = customSizeTile(mapView.nearLeft.longitude, false);
             double TRlat = customSizeTile(mapView.farRight.latitude, true);
             double TRlon = customSizeTile(mapView.farRight.longitude, false);
-            //Log.d("BL", String.valueOf(BLlat) + "  " + String.valueOf(BLlon));
             //query al db
             if (mapView.nearLeft.longitude > mapView.farRight.longitude) {//to handle pacman effect
                 mTilesViewModel.searchPacmanMapTiles(mapType, BLlat, BLlon, TRlat, TRlon);
@@ -414,7 +444,9 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         Log.e("main","RESUMED");
         Utils.checkPermissions(this);
-        Log.e("bg PERMISSION", String.valueOf(isBackgroundLocationGranted));
+        if (!Utils.isBackgroundLocationGranted) {
+            defaultPreferences.edit().putBoolean("bgsampling", false).apply();
+        }
         if(Utils.isLocationGranted) {
             Utils.checkGPS(this);
         }
@@ -449,8 +481,6 @@ public class MainActivity extends AppCompatActivity
             btnGather.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.purple_500, null));
             map.setMyLocationEnabled(true);
             map.getUiSettings().setMyLocationButtonEnabled(true);
-            //finish();
-            //startActivity(getIntent());
         } else {
             btnGather.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.grey, null));
             btnGather.setEnabled(false);//disabilito pulsante per evitare overload di richieste

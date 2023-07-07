@@ -106,7 +106,6 @@ public class GatheringService extends Service {
                 if(result!=-1){dataGathered.put(1,result);}
                 result = gatherNoise();
                 if(result!=-1){dataGathered.put(2,result);}
-                Log.e("gatherservice", "FATTO TUTTO!");
                 //query db
                 dataGathered.forEach((type,v) -> {
                     mTilesViewModel.insertTile(new MapTile(customSizeTile(location.getLatitude(), true),
@@ -134,10 +133,8 @@ public class GatheringService extends Service {
             for (CellInfo cellInfo : cellInfos) {
                 if (cellInfo instanceof CellInfoLte) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        Log.e("gather from this", String.valueOf(cellInfo.getCellSignalStrength().getLevel()));
                         return cellInfo.getCellSignalStrength().getLevel() * 25;
                     }
-                    Log.e("gather from this", String.valueOf(telephonyManager.getSignalStrength().getLevel()));
                     return telephonyManager.getSignalStrength().getLevel() * 25;
                 }
             }
@@ -165,7 +162,7 @@ public class GatheringService extends Service {
     }
     private int gatherNoise(){
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-            Log.e("gatherservice", "MEDIA RECORDO!");
+            Log.e("gatherservice", "MEDIA RECORD");
             MediaRecorder mediaRecorder = new MediaRecorder();
             mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
@@ -190,7 +187,10 @@ public class GatheringService extends Service {
                 e.printStackTrace();
             }
             mediaRecorder.release();
-            return maxamp-10;//
+            maxamp-=10;
+            if(maxamp>0 && maxamp<=100){
+                return maxamp;
+            }
         }
         return -1;
     }

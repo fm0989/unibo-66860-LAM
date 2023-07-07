@@ -55,7 +55,7 @@
     </LinearLayout>
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentContainerView"
+        android:id="@+id/fragmentOptions"
         android:name="com.example.prjlam.SettingsFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"

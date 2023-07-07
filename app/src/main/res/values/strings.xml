@@ -31,10 +31,10 @@
     <string name="settbg">Run app in background</string>
     <string name="settmaxrecord">Max records per area</string>
     <string name="settmaxrecord_summ">Max records saved in the database per map area</string>
-    <string name="settsamplingtime">Sampling Interval</string>
+    <string name="settsamplingtime">Sampling Interval (minutes)</string>
     <string name="settsamplingtime_summ">Time between app information gathering</string>
     <string name="settssid">Wifi network name</string>
     <string name="settssid_summ">The name of the Wifi network you want to track (if empty any Wifi network will be tracked)</string>
     <string name="settreport">Number of days since new area discovery analysis report notification</string>
-    <string name="settreport_summ">The number of days to be notified of a periodic report on newly discovered data</string>
+    <string name="settreport_summ">The number of days after which be notified of the periodic report on newly discovered areas</string>
 </resources>
