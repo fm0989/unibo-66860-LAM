@@ -5,6 +5,8 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.RawQuery;
+import androidx.sqlite.db.SupportSQLiteQuery;
 
 import java.util.List;
 
@@ -26,4 +28,6 @@ public interface MapTileDao {
     List<MapTile> getPacmanPointTiles(int type,double minlatitude, double minlongitude, double maxlatitude, double maxlongitude);
     @Query("SELECT * FROM map_tiles_table as A WHERE NOT EXISTS (SELECT * FROM map_tiles_table as B WHERE A.longitude=B.longitude AND A.latitude=B.latitude AND date < :starting)")
     List<MapTile> getNewDiscoveredTiles(long starting);
+    @RawQuery
+    int checkpoint(SupportSQLiteQuery supportSQLiteQuery);
 }

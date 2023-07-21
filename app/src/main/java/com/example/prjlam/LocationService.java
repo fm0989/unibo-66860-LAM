@@ -1,8 +1,5 @@
 package com.example.prjlam;
 
-import static com.example.prjlam.Utils.BACKGROUND_NOTIFICATION_NAME;
-import static com.example.prjlam.Utils.customSizeTile;
-
 import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -82,8 +79,8 @@ public class LocationService extends Service {
         super.onCreate();
         handler = new Handler();
         Log.e("locationservice", "NATO!");
-        NotificationChannel channel = new NotificationChannel(BACKGROUND_NOTIFICATION_NAME.toString(), BACKGROUND_NOTIFICATION_NAME, NotificationManager.IMPORTANCE_NONE);
-        channel.setDescription("Foreground notification when gathering data in background");
+        NotificationChannel channel = new NotificationChannel(getResources().getString(R.string.notifchbgid), getResources().getString(R.string.notifchbg), NotificationManager.IMPORTANCE_NONE);
+        channel.setDescription(getResources().getString(R.string.notifchbgdescr));
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(channel);
 
@@ -111,10 +108,10 @@ public class LocationService extends Service {
         foregroundIntent.putExtra("CALLER", "notificationFromForeground");
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, foregroundIntent, PendingIntent.FLAG_IMMUTABLE);
-        Notification notification = new NotificationCompat.Builder(this, (String) BACKGROUND_NOTIFICATION_NAME)
+        Notification notification = new NotificationCompat.Builder(this, getResources().getString(R.string.notifchbgid))
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("Background data gathering")
-                .setContentText("Service is collecting location coordinates")
+                .setContentTitle(getResources().getString(R.string.notifchbgtitle))
+                .setContentText(getResources().getString(R.string.notifchbgtext2))
                 .setContentIntent(pendingIntent)
                 .build();
         startForeground(1, notification);
@@ -147,6 +144,13 @@ public class LocationService extends Service {
                         Log.e("locationservice", "LOC REQUESTED!");
                     }
                 });
+                task.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        stopSelf();
+                    }
+                });
+
             }).start();
         }
         return START_STICKY;

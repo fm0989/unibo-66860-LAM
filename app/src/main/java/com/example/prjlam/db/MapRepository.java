@@ -3,6 +3,7 @@ package com.example.prjlam.db;
 import android.app.Application;
 
 import androidx.lifecycle.MutableLiveData;
+import androidx.sqlite.db.SimpleSQLiteQuery;
 
 import java.util.List;
 
@@ -58,6 +59,11 @@ public class MapRepository {
     void getNewDiscoveredTiles(long starting){
         MapRoomDatabase.databaseWriteExecutor.execute(() -> {
             searchedRecentMapTiles.postValue(mMapTileDao.getNewDiscoveredTiles(starting));
+        });
+    }
+    void checkpointDatabase(SimpleSQLiteQuery simpleSQLiteQuery){
+        MapRoomDatabase.databaseWriteExecutor.execute(() -> {
+            mMapTileDao.checkpoint(simpleSQLiteQuery);
         });
     }
 }

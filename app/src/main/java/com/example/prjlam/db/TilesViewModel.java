@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
+import androidx.sqlite.db.SimpleSQLiteQuery;
 
 import java.util.List;
 
@@ -37,5 +38,6 @@ public class TilesViewModel extends AndroidViewModel {
     public void deleteAll(){this.mRepository.deleteAll();}
     public void deleteType(int type){this.mRepository.deleteType(type);}
     public void getNewDiscoveredTiles(long starting){this.mRepository.getNewDiscoveredTiles(starting);}
+    public void checkpointDatabase(){ this.mRepository.checkpointDatabase(new SimpleSQLiteQuery("pragma wal_checkpoint(full)"));}
 
 }

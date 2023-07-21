@@ -52,6 +52,12 @@
             android:layout_height="wrap_content"
             android:text="@string/settloaddb" />
 
+        <Button
+            android:id="@+id/btnSavedb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settsavedb" />
+
     </LinearLayout>
 
     <androidx.fragment.app.FragmentContainerView
@@ -69,8 +75,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start|bottom"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="12dp"
         android:contentDescription="@string/back"
         android:rotation="180"
         android:tint="#FFFFFFFF"

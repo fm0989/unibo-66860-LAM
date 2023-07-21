@@ -1,14 +1,14 @@
 <resources>
-    <string name="app_name">PRJLAM</string>
-    <string name="gather_action">com.example.prjlam.GATHER_DATA</string>
-    <string name="reset_alarm_action">com.example.prjlam.RESET_ALARM</string>
+    <string name="app_name" translatable="false">PRJLAM</string>
+    <string name="gather_action" translatable="false">com.example.prjlam.GATHER_DATA</string>
+    <string name="reset_alarm_action" translatable="false">com.example.prjlam.RESET_ALARM</string>
 
     <string name="no_gps_network">Both GPS and network must be active for using the app</string>
     <string name="no_audio_permission">Audio permission is needed for noise detection</string>
     <string name="open_loc_sett">Location settings</string>
     <string name="open_app_sett">App permission settings</string>
     <string name="cancel">Cancel</string>
-    <string name="back">Go back</string>
+    <string name="back">Back</string>
     <string name="settings">Settings</string>
     <string name="notification">Notifications</string>
 
@@ -26,15 +26,32 @@
     <string name="quiet">QUIET</string>
     <string name="loud">LOUD</string>
 
+    <string name="notifchbg">BackgroundServiceChannel</string>
+    <string name="notifchbgid" translatable="false">1</string>
+    <string name="notifchbgdescr">Foreground notification when gathering data in background</string>
+    <string name="notifchbgtitle">Background data gathering</string>
+    <string name="notifchbgtext1">Service is gathering Wifi,Lte and noise data</string>
+    <string name="notifchbgtext2">Service is collecting location coordinates</string>
+    <string name="notifchreport">NewAreasReportChannel</string>
+    <string name="notifchreportid" translatable="false">2</string>
+    <string name="notifchreportdescr">Notification of the periodic report on the analysis of the new areas</string>
+    <string name="notifchreporttitle">Report of data collected from new areas</string>
+    <string name="notifchreporttext1">"You have analyzed "</string>
+    <string name="notifchreporttext2"> new areas</string>
+    <string name="notifchreporttext3">Open the app to view the results</string>
+
+    <string name="toastdbdeleted">SELECTED TYPE DATA DELETED</string>
+    <string name="toastdone">DONE</string>
     <string name="settdeletedb">Delete database records</string>
     <string name="settloaddb">Load database from file</string>
+    <string name="settsavedb">Export local database</string>
     <string name="settbg">Run app in background</string>
     <string name="settmaxrecord">Max records per area</string>
     <string name="settmaxrecord_summ">Max records saved in the database per map area</string>
     <string name="settsamplingtime">Sampling Interval (minutes)</string>
-    <string name="settsamplingtime_summ">Time between app information gathering</string>
+    <string name="settsamplingtime_summ">Timer time before device data collection</string>
     <string name="settssid">Wifi network name</string>
     <string name="settssid_summ">The name of the Wifi network you want to track (if empty any Wifi network will be tracked)</string>
-    <string name="settreport">Number of days since new area discovery analysis report notification</string>
-    <string name="settreport_summ">The number of days after which be notified of the periodic report on newly discovered areas</string>
+    <string name="settreport">Days since last report on new discovered areas</string>
+    <string name="settreport_summ">Number of days after which to show the report on the new analyzed areas</string>
 </resources>

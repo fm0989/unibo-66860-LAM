@@ -30,10 +30,15 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.prjlam.db.MapRoomDatabase;
 import com.example.prjlam.db.TilesViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
 public class OptionActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
@@ -41,6 +46,7 @@ public class OptionActivity extends AppCompatActivity implements AdapterView.OnI
     Spinner spCat;
     Button btnDeletedb;
     Button btnLoaddb;
+    Button btnSavedb;
     private int selectedType=0;
     FloatingActionButton goBack;
     SharedPreferences defaultPreferences;
@@ -67,6 +73,7 @@ public class OptionActivity extends AppCompatActivity implements AdapterView.OnI
                             defaultPreferences.edit().putLong("reportTime", reportT).apply();
                         }else {
                             defaultPreferences.edit().putLong("reportTime", 0L).apply();
+                            defaultPreferences.edit().putString("daysreport", "0").apply();
                         }
                     } catch (NumberFormatException nfe) {
                         defaultPreferences.edit().putString("daysreport", "0").apply();
@@ -76,20 +83,37 @@ public class OptionActivity extends AppCompatActivity implements AdapterView.OnI
             }
     };
 
-    ActivityResultLauncher<Intent> mLauncher = registerForActivityResult(//API di activity result sistema piu' sicuro a contratto
+    ActivityResultLauncher<Intent> saveFileLauncher = registerForActivityResult(//API di activity result sistema piu' sicuro a contratto
         new ActivityResultContracts.StartActivityForResult(),
-        new ActivityResultCallback<ActivityResult>() {
-            @Override
-            public void onActivityResult(ActivityResult result) {
-                Log.d("options", "tornato da picker");
+            result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                     Uri uri = result.getData().getData();
-                    String path = uri.getPath();
-                    File file = new File(path);
-                    Toast.makeText(getApplicationContext(),file.getName(),Toast.LENGTH_SHORT).show();
+                    try {
+                        File dbPath = Utils.getRoomDatabasePath(getApplicationContext(),"map_database");
+                        Utils.copyFile(getApplicationContext(),dbPath.getAbsolutePath(),uri);
+
+                        Toast.makeText(getApplicationContext(), R.string.toastdone,Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
-            }
-    });
+            });
+    ActivityResultLauncher<Intent> loadFileLauncher = registerForActivityResult(//API di activity result sistema piu' sicuro a contratto
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    Uri uri = result.getData().getData();
+                    try {
+                        File dbPath = Utils.getRoomDatabasePath(getApplicationContext(),"map_database");
+                        new File(dbPath.getAbsolutePath()+"-shm").delete();
+                        new File(dbPath.getAbsolutePath()+"-wal").delete();
+                        Utils.copyFile(getApplicationContext(),uri,dbPath.getAbsolutePath());
+                        System.exit(0);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,18 +126,15 @@ public class OptionActivity extends AppCompatActivity implements AdapterView.OnI
         btnDeletedb = findViewById(R.id.btnDeletedb);
         btnDeletedb.setOnClickListener(v -> {
             mTilesViewModel.deleteType(selectedType);
-            Toast.makeText(getApplicationContext(),"SELECTED TYPE RECORDS DELETED", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),R.string.toastdbdeleted, Toast.LENGTH_SHORT).show();
         });
         btnLoaddb = findViewById(R.id.btnLoaddb);
         btnLoaddb.setOnClickListener(v -> {
-            Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-            i.setType("*/*");
-            i.addCategory(Intent.CATEGORY_OPENABLE);
-            try {
-                mLauncher.launch(i);
-            }catch (Exception e){
-                Log.e("options","no file manager");//mettere toast
-            }
+            importDatabase();
+        });
+        btnSavedb = findViewById(R.id.btnSavedb);
+        btnSavedb.setOnClickListener(v -> {
+            exportDatabase();
         });
         goBack = findViewById(R.id.goBack);
         goBack.setOnClickListener(v -> {
@@ -140,5 +161,20 @@ public class OptionActivity extends AppCompatActivity implements AdapterView.OnI
             Intent i = new Intent(getApplicationContext(), BackgroundReceiver.class).setAction(getApplicationContext().getResources().getString(R.string.reset_alarm_action));
             sendBroadcast(i);
         }
+    }
+
+    public void exportDatabase() {
+        mTilesViewModel.checkpointDatabase();
+        Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        i.setType("application/octet-stream");
+        i.putExtra(Intent.EXTRA_TITLE, "map_database");
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        saveFileLauncher.launch(i);
+    }
+    public void importDatabase() {
+        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+        i.setType("application/octet-stream");
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        loadFileLauncher.launch(i);
     }
 }

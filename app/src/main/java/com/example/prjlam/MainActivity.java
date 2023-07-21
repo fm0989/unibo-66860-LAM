@@ -1,13 +1,5 @@
 package com.example.prjlam;
 
-import static com.example.prjlam.Utils.BACKGROUND_PERMISSION_REQUEST_CODE;
-import static com.example.prjlam.Utils.MY_LOCATION_PERMISSION_REQUEST_CODE;
-import static com.example.prjlam.Utils.REPORT_NOTIFICATION_NAME;
-import static com.example.prjlam.Utils.customSizeTile;
-import static com.example.prjlam.Utils.halfHeight;
-import static com.example.prjlam.Utils.halfWidth;
-import static com.example.prjlam.Utils.isAudioGranted;
-import static com.example.prjlam.Utils.isBackgroundLocationGranted;
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_TERRAIN;
 
 import androidx.activity.result.ActivityResult;
@@ -23,11 +15,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -156,7 +146,7 @@ public class MainActivity extends AppCompatActivity
                 //this wont happen
                 return;
             }
-            if(!isAudioGranted) {
+            if(!Utils.isAudioGranted) {
                 // notify user
                 new AlertDialog
                         .Builder(this)
@@ -215,53 +205,56 @@ public class MainActivity extends AppCompatActivity
 
     private void checkReport() {
         /* Create Report Notification Channel */
-        String description = "Notification of the periodic report on the analysis of the new areas";
-        NotificationChannel channel = new NotificationChannel(REPORT_NOTIFICATION_NAME.toString(), REPORT_NOTIFICATION_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+        String description = getResources().getString(R.string.notifchreportdescr);
+        NotificationChannel channel = new NotificationChannel(getResources().getString(R.string.notifchreportid), getResources().getString(R.string.notifchreport), NotificationManager.IMPORTANCE_DEFAULT);
         channel.setDescription(description);
         NotificationManager notificationManager = this.getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(channel);
+        if(!notificationManager.areNotificationsEnabled()){
+            Utils.requestMyPermission(this,Utils.NOTIFICATION_PERMISSION_REQUEST_CODE,false);
+        }
         //NOTIFICA REPORT SE IL GIORNO E' CORRETTO
-        int t = 0;
+        int t;
         try {
-            Integer.parseInt(defaultPreferences.getString("daysreport", "0"));
+            t = Integer.parseInt(defaultPreferences.getString("daysreport", "0"));
+            if(t > 0) {
+                mTilesViewModel.getSearchedRecentTiles().observe(this, new Observer<List<MapTile>>() {
+                    @Override
+                    public void onChanged(List<MapTile> mapTiles) {
+                        List<LatLng> coords = new ArrayList<>();
+                        //raggruppa dati
+                        for (MapTile tile : mapTiles) {
+                            if(!coords.contains(new LatLng(tile.latitude,tile.longitude))){
+                                coords.add(new LatLng(tile.latitude,tile.longitude));
+                            }
+                        }
+                        //lancia notifica
+                        Log.e("main","lanico notifica");
+                        Intent reportIntent = new Intent(getApplicationContext(), MainActivity.class);
+                        reportIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        reportIntent.putExtra("CALLER", "notificationFromBroadcast");
+                        Notification notification = new NotificationCompat.Builder(getApplicationContext(), getResources().getString(R.string.notifchreportid))
+                                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                                .setContentTitle(getResources().getString(R.string.notifchreporttitle))
+                                .setContentText(getResources().getString(R.string.notifchreporttext1)+coords.size()+getResources().getString(R.string.notifchreporttext2))
+                                .build();
+                        notificationManager.notify(3,notification);
+                        defaultPreferences.edit().putLong("reportTime", System.currentTimeMillis()+86400000L*Integer.parseInt(defaultPreferences.getString("daysreport", "0"))).apply();
+                    }
+                });
+                long nowT = System.currentTimeMillis();
+                long reportT = defaultPreferences.getLong("reportTime", 0);
+                if (nowT > reportT) {//se la data e' stata superata
+                    mTilesViewModel.getNewDiscoveredTiles(reportT);
+                }
+            }
         } catch (NumberFormatException nfe) {
             defaultPreferences.edit().putString("daysreport", "0").apply();
             defaultPreferences.edit().putLong("reportTime", 0L).apply();
         }
-        if(t > 0) {
-            mTilesViewModel.getSearchedRecentTiles().observe(this, new Observer<List<MapTile>>() {
-                @Override
-                public void onChanged(List<MapTile> mapTiles) {
-                    List<LatLng> coords = new ArrayList<>();
-                    //raggruppa dati
-                    for (MapTile tile : mapTiles) {
-                        if(!coords.contains(new LatLng(tile.latitude,tile.longitude))){
-                            coords.add(new LatLng(tile.latitude,tile.longitude));
-                        }
-                    }
-                    //lancia notifica
-                    Intent reportIntent = new Intent(getApplicationContext(), BackgroundReceiver.class);
-                    reportIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    reportIntent.putExtra("CALLER", "notificationFromBroadcast");
-                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),0, reportIntent, PendingIntent.FLAG_IMMUTABLE);
-                    Notification notification = new NotificationCompat.Builder(getApplicationContext(), (String) REPORT_NOTIFICATION_NAME)
-                            .setSmallIcon(R.drawable.ic_launcher_foreground)
-                            .setContentTitle("Report of data collected from new areas")
-                            .setContentText("Service has collected "+coords.size()+" new areas!")
-                            .setContentIntent(pendingIntent)
-                            .build();
-                    notificationManager.notify(3,notification);
-                    defaultPreferences.edit().putLong("reportTime", System.currentTimeMillis()+86400000L*Integer.parseInt(defaultPreferences.getString("daysreport", "0"))).apply();
-                }
-            });
-            long nowT = System.currentTimeMillis();
-            long reportT = defaultPreferences.getLong("reportTime", 0);
-            if (nowT > reportT) {//se la data e' stata superata
-                mTilesViewModel.getNewDiscoveredTiles(reportT);
-            }
-        }
     }
 
+    //modifica l'UI dei bottoni legenda
     private void changeMapType(int type) {
         mapType = type;
         cENABLE = new boolean[]{true, true, true};
@@ -304,7 +297,7 @@ public class MainActivity extends AppCompatActivity
             }
             if ((boolean) mypref.get("bgsampling")) {
                 if (!Utils.isBackgroundLocationGranted)
-                    Utils.requestMyPermission(this, BACKGROUND_PERMISSION_REQUEST_CODE, false);
+                    Utils.requestMyPermission(this, Utils.BACKGROUND_PERMISSION_REQUEST_CODE, false);
                 else {
                     //lancio bg receiver
                     Intent i = new Intent(getApplicationContext(), BackgroundReceiver.class).setAction(getApplicationContext().getResources().getString(R.string.reset_alarm_action));
@@ -336,10 +329,10 @@ public class MainActivity extends AppCompatActivity
             map.setMyLocationEnabled(true);
         } else {
             map.setMyLocationEnabled(false);
-            Utils.requestMyPermission(this, MY_LOCATION_PERMISSION_REQUEST_CODE, false);
+            Utils.requestMyPermission(this, Utils.MY_LOCATION_PERMISSION_REQUEST_CODE, false);
         }
         // Move the camera
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(44.49840, 11.35541), 12));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(44.49840, 11.35541), 16));
         googleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() { queryMapData(); }
@@ -357,10 +350,10 @@ public class MainActivity extends AppCompatActivity
             if (mapView.nearLeft.latitude > mapView.farRight.latitude) {
                 return;
             }
-            double BLlat = customSizeTile(mapView.nearLeft.latitude, true);
-            double BLlon = customSizeTile(mapView.nearLeft.longitude, false);
-            double TRlat = customSizeTile(mapView.farRight.latitude, true);
-            double TRlon = customSizeTile(mapView.farRight.longitude, false);
+            double BLlat = Utils.customSizeTile(mapView.nearLeft.latitude, true);
+            double BLlon = Utils.customSizeTile(mapView.nearLeft.longitude, false);
+            double TRlat = Utils.customSizeTile(mapView.farRight.latitude, true);
+            double TRlon = Utils.customSizeTile(mapView.farRight.longitude, false);
             //query al db
             if (mapView.nearLeft.longitude > mapView.farRight.longitude) {//to handle pacman effect
                 mTilesViewModel.searchPacmanMapTiles(mapType, BLlat, BLlon, TRlat, TRlon);
@@ -404,10 +397,10 @@ public class MainActivity extends AppCompatActivity
         }
         compressed.forEach((tile, v) -> {//rendering dei tile
             map.addPolygon(new PolygonOptions()
-                    .addAll(Arrays.asList(new LatLng(tile.latitude - halfHeight, tile.longitude - halfWidth),
-                            new LatLng(tile.latitude - halfHeight, tile.longitude + halfWidth),
-                            new LatLng(tile.latitude + halfHeight, tile.longitude + halfWidth),
-                            new LatLng(tile.latitude + halfHeight, tile.longitude - halfWidth)))
+                    .addAll(Arrays.asList(new LatLng(tile.latitude - Utils.halfHeight, tile.longitude - Utils.halfWidth),
+                            new LatLng(tile.latitude - Utils.halfHeight, tile.longitude + Utils.halfWidth),
+                            new LatLng(tile.latitude + Utils.halfHeight, tile.longitude + Utils.halfWidth),
+                            new LatLng(tile.latitude + Utils.halfHeight, tile.longitude - Utils.halfWidth)))
                     .fillColor(evaluate(v.sum / v.iter))
                     .strokeWidth(0));
         });

@@ -1,6 +1,5 @@
 package com.example.prjlam;
 
-import static com.example.prjlam.Utils.BACKGROUND_NOTIFICATION_NAME;
 import static com.example.prjlam.Utils.customSizeTile;
 
 import android.Manifest;
@@ -11,6 +10,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.media.MediaRecorder;
@@ -66,8 +66,8 @@ public class GatheringService extends Service {
         handler = new Handler();
         mTilesViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication()).create(TilesViewModel.class);
 
-        NotificationChannel channel = new NotificationChannel(BACKGROUND_NOTIFICATION_NAME.toString(), BACKGROUND_NOTIFICATION_NAME, NotificationManager.IMPORTANCE_MIN);
-        channel.setDescription("Foreground notification when gathering data in background");
+        NotificationChannel channel = new NotificationChannel(getResources().getString(R.string.notifchbgid), getResources().getString(R.string.notifchbg), NotificationManager.IMPORTANCE_MIN);
+        channel.setDescription(getResources().getString(R.string.notifchbgdescr));
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(channel);
     }
@@ -81,10 +81,10 @@ public class GatheringService extends Service {
             foregroundIntent.putExtra("CALLER", "notificationFromForeground");
             PendingIntent pendingIntent = PendingIntent.getActivity(this,
                     0, foregroundIntent, PendingIntent.FLAG_IMMUTABLE);
-            Notification notification = new NotificationCompat.Builder(this, (String) BACKGROUND_NOTIFICATION_NAME)
+            Notification notification = new NotificationCompat.Builder(this, getResources().getString(R.string.notifchbgid))
                     .setSmallIcon(R.drawable.ic_launcher_foreground)
-                    .setContentTitle("Background data gathering")
-                    .setContentText("Service is gathering Wifi,Lte and noise data")
+                    .setContentTitle(getResources().getString(R.string.notifchbgtitle))
+                    .setContentText(getResources().getString(R.string.notifchbgtext1))
                     .setContentIntent(pendingIntent)
                     .build();
             startForeground(2, notification);
@@ -154,7 +154,7 @@ public class GatheringService extends Service {
                     }
                 }
                 else if(name.equals("") || wifiManager.getConnectionInfo().getSSID().substring(1, wifiManager.getConnectionInfo().getSSID().length() - 1).equals(name)){
-                    return wifiManager.calculateSignalLevel(wifiManager.getConnectionInfo().getRssi(), 4) * 25 + 25;
+                    return wifiManager.calculateSignalLevel(wifiManager.getConnectionInfo().getRssi(), 5) * 25 + 25;
                 }
             }
         }
@@ -162,7 +162,6 @@ public class GatheringService extends Service {
     }
     private int gatherNoise(){
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-            Log.e("gatherservice", "MEDIA RECORD");
             MediaRecorder mediaRecorder = new MediaRecorder();
             mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);

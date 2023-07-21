@@ -1,7 +1,5 @@
 package com.example.prjlam;
 
-import static com.example.prjlam.Utils.REPORT_NOTIFICATION_NAME;
-
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -29,8 +27,8 @@ public class BackgroundReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         /* Create the Notification Channel */
-        String description = "Notification of the periodic report on the analysis of the new areas";
-        NotificationChannel channel = new NotificationChannel(REPORT_NOTIFICATION_NAME.toString(), REPORT_NOTIFICATION_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+        String description = context.getResources().getString(R.string.notifchreportdescr);
+        NotificationChannel channel = new NotificationChannel(context.getResources().getString(R.string.notifchreportid), context.getResources().getString(R.string.notifchreport), NotificationManager.IMPORTANCE_DEFAULT);
         channel.setDescription(description);
         NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(channel);
@@ -41,34 +39,39 @@ public class BackgroundReceiver extends BroadcastReceiver {
         alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         if(Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-            Log.e("BroadcastRcv","setto allarme");
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_DENIED ||
-                    !PreferenceManager.getDefaultSharedPreferences(context).getBoolean("bgsampling",false)) {return;}
-            createAlarm(context,alarmManager,SAMPLETIME);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                    PreferenceManager.getDefaultSharedPreferences(context).getBoolean("bgsampling",false)) {
+                Log.e("BroadcastRcv","setto allarme");
+                createAlarm(context,alarmManager,SAMPLETIME);
+            }
             //NOTIFICA REPORT SE IL GIORNO E' CORRETTO
-            int t = 0;
+            int t;
             try {
                 t = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("daysreport", "0"));
+                Log.d("broadcastrcv","daysreoirt "+t);
+                if (t > 0) {
+                    Log.d("broadcastrcv","reporting");
+                    long nowT = System.currentTimeMillis();
+                    long reportT = PreferenceManager.getDefaultSharedPreferences(context).getLong("reportTime", 0);
+                    if (nowT > reportT) {
+                        Log.d("broadcastrcv","reported");
+                        Intent reportIntent = new Intent(context, MainActivity.class);
+                        reportIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        reportIntent.putExtra("CALLER", "notificationFromBroadcast");
+                        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, reportIntent, PendingIntent.FLAG_IMMUTABLE);
+                        Notification notification = new NotificationCompat.Builder(context, context.getResources().getString(R.string.notifchreportid))
+                                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                                .setContentTitle(context.getResources().getString(R.string.notifchreporttitle))
+                                .setContentText(context.getResources().getString(R.string.notifchreporttext3))
+                                .setContentIntent(pendingIntent)
+                                .build();
+                        notificationManager.notify(3, notification);
+                    }
+                }
             } catch (NumberFormatException nfe) {
                 PreferenceManager.getDefaultSharedPreferences(context).edit().putString("daysreport", "0").apply();
                 PreferenceManager.getDefaultSharedPreferences(context).edit().putLong("reportTime", 0L).apply();
-            }
-            if (t > 0) {
-                long nowT = System.currentTimeMillis();
-                long reportT = PreferenceManager.getDefaultSharedPreferences(context).getLong("reportTime", 0);
-                if (nowT > reportT) {
-                    Intent reportIntent = new Intent(context, BackgroundReceiver.class);
-                    reportIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    reportIntent.putExtra("CALLER", "notificationFromBroadcast");
-                    PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, reportIntent, PendingIntent.FLAG_IMMUTABLE);
-                    Notification notification = new NotificationCompat.Builder(context, (String) REPORT_NOTIFICATION_NAME)
-                            .setSmallIcon(R.drawable.ic_launcher_foreground)
-                            .setContentTitle("Report of data collected from new areas")
-                            .setContentText("Open the app to view the results")
-                            .setContentIntent(pendingIntent)
-                            .build();
-                    notificationManager.notify(3, notification);
-                }
+                Log.e("BroadcastRcv","daysreport not an integer");
             }
         } else if(context.getResources().getString(R.string.reset_alarm_action).equals(intent.getAction())) {
             Log.e("BroadcastRcv","setto allarme");
@@ -89,7 +92,7 @@ public class BackgroundReceiver extends BroadcastReceiver {
     void createAlarm(Context context,AlarmManager alarm,int interval){
         Intent alarmintent = new Intent(context,BackgroundReceiver.class).setAction(context.getResources().getString(R.string.gather_action));
         alarmintent.putExtra("type",0);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmintent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmintent, PendingIntent.FLAG_IMMUTABLE);
         alarm.setAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 SystemClock.elapsedRealtime() + interval*60000,
                 pendingIntent);
