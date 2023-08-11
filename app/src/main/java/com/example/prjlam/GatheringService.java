@@ -106,6 +106,7 @@ public class GatheringService extends Service {
                 if(result!=-1){dataGathered.put(1,result);}
                 result = gatherNoise();
                 if(result!=-1){dataGathered.put(2,result);}
+
                 //query db
                 dataGathered.forEach((type,v) -> {
                     mTilesViewModel.insertTile(new MapTile(customSizeTile(location.getLatitude(), true),
@@ -154,7 +155,7 @@ public class GatheringService extends Service {
                     }
                 }
                 else if(name.equals("") || wifiManager.getConnectionInfo().getSSID().substring(1, wifiManager.getConnectionInfo().getSSID().length() - 1).equals(name)){
-                    return wifiManager.calculateSignalLevel(wifiManager.getConnectionInfo().getRssi(), 5) * 25 + 25;
+                    return wifiManager.calculateSignalLevel(wifiManager.getConnectionInfo().getRssi(), 5) * 25;
                 }
             }
         }
@@ -186,9 +187,9 @@ public class GatheringService extends Service {
                 e.printStackTrace();
             }
             mediaRecorder.release();
-            maxamp-=10;
-            if(maxamp>0 && maxamp<=100){
-                return maxamp;
+            maxamp=maxamp*100/80;
+            if(maxamp>25 && maxamp<=70){//Bias per adattare il valore alla scala decibel
+                return maxamp - 20;
             }
         }
         return -1;
@@ -203,7 +204,7 @@ public class GatheringService extends Service {
             try {
                 int amplitude = recorder.getMaxAmplitude()+1;
                 amplitudeDb = (int) (20 * Math.log10((double) Math.abs(amplitude)));
-            } catch (IllegalStateException e){
+            } catch (RuntimeException e){
                 Log.e("Recorder Timer","maxamplitude crash");
             }
         }

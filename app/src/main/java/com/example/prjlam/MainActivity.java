@@ -148,42 +148,10 @@ public class MainActivity extends AppCompatActivity
             }
             if(!Utils.isAudioGranted) {
                 // notify user
-                new AlertDialog
-                        .Builder(this)
-                        .setMessage(R.string.no_audio_permission)
-                        .setPositiveButton(R.string.open_app_sett, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                                paramDialogInterface.dismiss();
-                                MainActivity.this.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:" + MainActivity.this.getPackageName())));
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                                btnGather.setText(MainActivity.this.getResources().getString(R.string.gather_off));
-                                btnGather.setBackgroundColor(MainActivity.this.getResources().getColor(R.color.grey, null));
-                                btnGather.setEnabled(false);//disabilito pulsante per evitare overload di richieste
-                                MainActivity.this.startForegroundService(new Intent(MainActivity.this, LocationService.class));//chiama servizio foreground
-                                new Handler().postDelayed(() -> {
-                                    btnGather.setEnabled(true);
-                                    btnGather.setText(MainActivity.this.getResources().getString(R.string.gather_on));
-                                    btnGather.setBackgroundColor(MainActivity.this.getResources().getColor(R.color.purple_500, null));
-                                }, 5000);
-                            }
-                        })
-                        .show();
-            } else {
-                btnGather.setText(this.getResources().getString(R.string.gather_off));
-                btnGather.setBackgroundColor(this.getResources().getColor(R.color.grey, null));
-                btnGather.setEnabled(false);//disabilito pulsante per evitare overload di richieste
-                this.startForegroundService(new Intent(this, LocationService.class));//chiama servizio foreground
-                new Handler().postDelayed(() -> {
-                    btnGather.setEnabled(true);
-                    btnGather.setText(this.getResources().getString(R.string.gather_on));
-                    btnGather.setBackgroundColor(this.getResources().getColor(R.color.purple_500, null));
-                }, 5000);
+                Utils.requestMyPermission(MainActivity.this,Utils.AUDIO_PERMISSION_REQUEST_CODE,false);
+                return;
             }
+            startGather();
         });
 
         /* MAP */
@@ -203,6 +171,17 @@ public class MainActivity extends AppCompatActivity
         checkReport();
     }
 
+    private void startGather(){
+        btnGather.setText(getApplicationContext().getResources().getString(R.string.gather_off));
+        btnGather.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.grey, null));
+        btnGather.setEnabled(false);//disabilito pulsante per evitare overload di richieste
+        getApplicationContext().startForegroundService(new Intent(getApplicationContext(), LocationService.class));//chiama servizio foreground
+        new Handler().postDelayed(() -> {
+            btnGather.setEnabled(true);
+            btnGather.setText(MainActivity.this.getResources().getString(R.string.gather_on));
+            btnGather.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.purple_500, null));
+        }, 5000);
+    }
     private void checkReport() {
         /* Create Report Notification Channel */
         String description = getResources().getString(R.string.notifchreportdescr);
@@ -210,7 +189,7 @@ public class MainActivity extends AppCompatActivity
         channel.setDescription(description);
         NotificationManager notificationManager = this.getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(channel);
-        if(!notificationManager.areNotificationsEnabled()){
+        if(!notificationManager.areNotificationsEnabled() && Utils.isLocationGranted){
             Utils.requestMyPermission(this,Utils.NOTIFICATION_PERMISSION_REQUEST_CODE,false);
         }
         //NOTIFICA REPORT SE IL GIORNO E' CORRETTO
@@ -236,7 +215,7 @@ public class MainActivity extends AppCompatActivity
                         Notification notification = new NotificationCompat.Builder(getApplicationContext(), getResources().getString(R.string.notifchreportid))
                                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                                 .setContentTitle(getResources().getString(R.string.notifchreporttitle))
-                                .setContentText(getResources().getString(R.string.notifchreporttext1)+coords.size()+getResources().getString(R.string.notifchreporttext2))
+                                .setContentText(getResources().getString(R.string.notifchreporttext1)+coords.size()+" "+getResources().getString(R.string.notifchreporttext2))
                                 .build();
                         notificationManager.notify(3,notification);
                         defaultPreferences.edit().putLong("reportTime", System.currentTimeMillis()+86400000L*Integer.parseInt(defaultPreferences.getString("daysreport", "0"))).apply();
@@ -244,6 +223,7 @@ public class MainActivity extends AppCompatActivity
                 });
                 long nowT = System.currentTimeMillis();
                 long reportT = defaultPreferences.getLong("reportTime", 0);
+                Log.d("MAIN REPORT T", String.valueOf(reportT));
                 if (nowT > reportT) {//se la data e' stata superata
                     mTilesViewModel.getNewDiscoveredTiles(reportT);
                 }
@@ -413,9 +393,9 @@ public class MainActivity extends AppCompatActivity
     static int evaluate(int level) {
         if (cENABLE[2] && level >= 70 && level <= 100) {
             return HIGHT;
-        } else if (cENABLE[1] && level >= 35 && level < 70) {
+        } else if (cENABLE[1] && level > 35 && level < 70) {
             return AVERAGET;
-        } else if (cENABLE[0] && level >= 0 && level < 35) {
+        } else if (cENABLE[0] && level >= 0 && level <= 35) {
             return LOWT;
         } else {
             return NODATA;
@@ -427,7 +407,6 @@ public class MainActivity extends AppCompatActivity
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         changeMapType(Integer.parseInt(getResources().getStringArray(R.array.spinner_category_values)[i]));
     }
-
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
     }
@@ -468,15 +447,17 @@ public class MainActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         Utils.setGrantedPermission(requestCode, permissions, grantResults);
-        if (Utils.isLocationGranted) {
+        if (Utils.isLocationGranted && requestCode == Utils.MY_LOCATION_PERMISSION_REQUEST_CODE) {
             btnGather.setEnabled(true);
             btnGather.setText(getApplicationContext().getResources().getString(R.string.gather_on));
             btnGather.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.purple_500, null));
             map.setMyLocationEnabled(true);
             map.getUiSettings().setMyLocationButtonEnabled(true);
-        } else {
+        } else if (requestCode == Utils.AUDIO_PERMISSION_REQUEST_CODE) {
+            startGather();
+        }else if(requestCode == Utils.MY_LOCATION_PERMISSION_REQUEST_CODE){
             btnGather.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.grey, null));
-            btnGather.setEnabled(false);//disabilito pulsante per evitare overload di richieste
+            btnGather.setEnabled(false);
             map.setMyLocationEnabled(false);
             map.getUiSettings().setMyLocationButtonEnabled(false);
             Toast.makeText(this, "SOME FUNCTIONS WILL NOT WORK WITHOUT LOCATION PERMISSION", Toast.LENGTH_SHORT).show();
