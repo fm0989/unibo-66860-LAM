@@ -28,6 +28,8 @@ public interface MapTileDao {
     List<MapTile> getPacmanPointTiles(int type,double minlatitude, double minlongitude, double maxlatitude, double maxlongitude);
     @Query("SELECT * FROM map_tiles_table as A WHERE NOT EXISTS (SELECT * FROM map_tiles_table as B WHERE A.longitude=B.longitude AND A.latitude=B.latitude AND date < :starting)")
     List<MapTile> getNewDiscoveredTiles(long starting);
+    @Query("SELECT * FROM map_tiles_table WHERE latitude=:latitude AND longitude=:longitude")
+    List<MapTile> checkTileEntry(double latitude, double longitude);
     @RawQuery
     int checkpoint(SupportSQLiteQuery supportSQLiteQuery);
 }

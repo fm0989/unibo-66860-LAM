@@ -34,6 +34,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
+                <action android:name="@string/untracked_action"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
                 <action android:name="@string/reset_alarm_action"/>
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -42,6 +46,10 @@
             android:enabled="true"
             android:exported="false" />
         <service android:name=".LocationService"
+            android:foregroundServiceType="location"
+            android:enabled="true"
+            android:exported="false" />
+        <service android:name=".CheckAreaService"
             android:foregroundServiceType="location"
             android:enabled="true"
             android:exported="false" />

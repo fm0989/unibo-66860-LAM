@@ -24,39 +24,49 @@ import androidx.preference.PreferenceManager;
 
 public class BackgroundReceiver extends BroadcastReceiver {
     private AlarmManager alarmManager;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.e("broadcast receiver", "RICEVUTO!");
         int SAMPLETIME = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("sTime", "15"));
+        int UNTRACKEDTIME = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("untrackedAreaTime", "30"));
         alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         if(Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                     PreferenceManager.getDefaultSharedPreferences(context).getBoolean("bgsampling",false)) {
-                Log.e("BroadcastRcv","setto allarme");
-                createAlarm(context,alarmManager,SAMPLETIME);
+                createAlarm(context,alarmManager,SAMPLETIME,context.getResources().getString(R.string.gather_action),Utils.REQUEST_CODE_GATHER);
+                createAlarm(context,alarmManager,UNTRACKEDTIME,context.getResources().getString(R.string.untracked_action),Utils.REQUEST_CODE_UNTRACKED);
             }
             checkReportNotification(context);
         } else if(context.getResources().getString(R.string.reset_alarm_action).equals(intent.getAction())) {
-            Log.e("BroadcastRcv","setto allarme");
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_DENIED ||
                     !PreferenceManager.getDefaultSharedPreferences(context).getBoolean("bgsampling",false)) {return;}
-            createAlarm(context,alarmManager,SAMPLETIME);
+            createAlarm(context,alarmManager,SAMPLETIME,context.getResources().getString(R.string.gather_action),Utils.REQUEST_CODE_GATHER);
         } else if(context.getResources().getString(R.string.gather_action).equals(intent.getAction())){
-            Log.e("gather intent","lancio gather service");
-            context.startForegroundService(new Intent(context, LocationService.class));//chiama servizio foreground
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                 PreferenceManager.getDefaultSharedPreferences(context).getBoolean("bgsampling",false)) {
-                Log.e("BroadcastRcv","setto allarme");
-                createAlarm(context, alarmManager, SAMPLETIME);
+                Log.e("gather intent","lancio location service");
+                context.startForegroundService(new Intent(context, LocationService.class));//chiama servizio foreground
+                createAlarm(context, alarmManager, SAMPLETIME,context.getResources().getString(R.string.gather_action),Utils.REQUEST_CODE_GATHER);
+            }
+        } else if(context.getResources().getString(R.string.untracked_action).equals(intent.getAction())){
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                    PreferenceManager.getDefaultSharedPreferences(context).getBoolean("bgsampling",false)) {
+                Log.e("gather intent","lancio checkarea service");
+                context.startForegroundService(new Intent(context, CheckAreaService.class));//chiama servizio foreground
+                createAlarm(context, alarmManager, UNTRACKEDTIME,context.getResources().getString(R.string.untracked_action),Utils.REQUEST_CODE_UNTRACKED);
             }
         }
     }
 
-    void createAlarm(Context context,AlarmManager alarm,int interval){
-        Intent alarmintent = new Intent(context,BackgroundReceiver.class).setAction(context.getResources().getString(R.string.gather_action));
+    void createAlarm(Context context,AlarmManager alarm,int interval,String action,int rCode){
+        if(interval<=0)
+        {return;}
+        Log.e("BroadcastRcv","setto allarme");
+        Intent alarmintent = new Intent(context,BackgroundReceiver.class).setAction(action);
         alarmintent.putExtra("type",0);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmintent, PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, rCode, alarmintent, PendingIntent.FLAG_IMMUTABLE);
         alarm.setAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 SystemClock.elapsedRealtime() + interval*60000,
                 pendingIntent);
@@ -83,7 +93,7 @@ public class BackgroundReceiver extends BroadcastReceiver {
                     Intent reportIntent = new Intent(context, MainActivity.class);
                     reportIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     reportIntent.putExtra("CALLER", "notificationFromBroadcast");
-                    PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, reportIntent, PendingIntent.FLAG_IMMUTABLE);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(context, 2, reportIntent, PendingIntent.FLAG_IMMUTABLE);
                     Notification notification = new NotificationCompat.Builder(context, context.getResources().getString(R.string.notifchreportid))
                             .setSmallIcon(R.drawable.ic_launcher_foreground)
                             .setContentTitle(context.getResources().getString(R.string.notifchreporttitle))

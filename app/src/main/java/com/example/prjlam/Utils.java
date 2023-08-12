@@ -44,6 +44,9 @@ public abstract class Utils {
     public final static  double NTILES = 100000;
     public final static double halfWidth = 360 / NTILES / 3;//360 LONG
     public final static double halfHeight = 180 / NTILES / 2;//180 LAT
+    public static final int REQUEST_CODE_GATHER = 0;
+    public static final int REQUEST_CODE_UNTRACKED = 1;
+
 
     public static final int MY_LOCATION_PERMISSION_REQUEST_CODE = 1;
     public static final int AUDIO_PERMISSION_REQUEST_CODE = 2;

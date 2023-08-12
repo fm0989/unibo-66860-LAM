@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity
                         Log.e("main","lanico notifica");
                         Intent reportIntent = new Intent(getApplicationContext(), MainActivity.class);
                         reportIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        reportIntent.putExtra("CALLER", "notificationFromBroadcast");
+                        reportIntent.putExtra("CALLER", "notificationFromMain");
                         Notification notification = new NotificationCompat.Builder(getApplicationContext(), getResources().getString(R.string.notifchreportid))
                                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                                 .setContentTitle(getResources().getString(R.string.notifchreporttitle))

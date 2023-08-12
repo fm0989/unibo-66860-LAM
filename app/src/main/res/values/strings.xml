@@ -2,6 +2,7 @@
     <string name="app_name" translatable="false">PRJLAM</string>
     <string name="gather_action" translatable="false">com.example.prjlam.GATHER_DATA</string>
     <string name="reset_alarm_action" translatable="false">com.example.prjlam.RESET_ALARM</string>
+    <string name="untracked_action" translatable="false">com.example.prjlam.UNTRACKED_CHECK</string>
 
     <string name="no_gps_network">Both GPS and network must be active for using the app</string>
     <string name="no_audio_permission">Audio permission is needed for noise detection</string>
@@ -39,6 +40,12 @@
     <string name="notifchreporttext1">"You have analyzed "</string>
     <string name="notifchreporttext2"> new areas</string>
     <string name="notifchreporttext3">Open the app to view the results</string>
+    <string name="notifichuntrackedid" translatable="false">3</string>
+    <string name="notifichuntrackedtitle">This area has not yet been analyzed</string>
+    <string name="notifichuntracked">UntrackedAreasChannel</string>
+    <string name="notifichuntrackedtext">Open the app and analyze the new area!</string>
+    <string name="notifichuntrackeddescr">Notification of checking of untracked areas</string>
+
 
     <string name="toastdbdeleted">SELECTED TYPE DATA DELETED</string>
     <string name="toastdone">DONE</string>
@@ -54,4 +61,7 @@
     <string name="settssid_summ">The name of the Wifi network you want to track (if empty any Wifi network will be tracked)</string>
     <string name="settreport">Days since last report on new discovered areas</string>
     <string name="settreport_summ">Number of days after which to show the report on the new analyzed areas</string>
+    <string name="untrackedarea">Untracked area check interval (minutes)</string>
+    <string name="untrackedarea_summ">Timer time before checking if current location area is already tracked (if empty or zero check is disabled)</string>
+
 </resources>

@@ -79,6 +79,14 @@ public class OptionActivity extends AppCompatActivity implements AdapterView.OnI
                         defaultPreferences.edit().putString("daysreport", "0").apply();
                         defaultPreferences.edit().putLong("reportTime", 0L).apply();
                     }
+                } else if (key.equals("untrackedAreaTime")) {
+                    try {
+                        if(Integer.parseInt(sharedPreferences.getString(key,"0")) <= 0){
+                            defaultPreferences.edit().putString("untrackedAreaTime", "0").apply();
+                        }
+                    } catch (NumberFormatException nfe) {
+                        defaultPreferences.edit().putString("untrackedAreaTime", "0").apply();
+                    }
                 }
             }
     };

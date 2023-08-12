@@ -29,5 +29,11 @@
             android:key="daysreport"
             android:summary="@string/settreport_summ"
             android:title="@string/settreport" />
+        <EditTextPreference
+            android:defaultValue="30"
+            android:dialogTitle="@string/untrackedarea"
+            android:key="untrackedAreaTime"
+            android:summary="@string/untrackedarea_summ"
+            android:title="@string/untrackedarea" />
     </PreferenceCategory>
 </PreferenceScreen>

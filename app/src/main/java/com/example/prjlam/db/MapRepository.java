@@ -10,6 +10,7 @@ import java.util.List;
 public class MapRepository {
 
     private MapTileDao mMapTileDao;
+    private MutableLiveData<List<MapTile>> checkedTile = new MutableLiveData<>();
     private MutableLiveData<List<MapTile>> searchedMapTiles = new MutableLiveData<>();
     private MutableLiveData<List<MapTile>> searchedRecentMapTiles = new MutableLiveData<>();
 
@@ -24,6 +25,10 @@ public class MapRepository {
     MutableLiveData<List<MapTile>> getSearchRecentResults() {
         return searchedRecentMapTiles;
     }
+    MutableLiveData<List<MapTile>> getCheckedResults() {
+        return checkedTile;
+    }
+
     // LiveData queries within Room are automatically executed in background
     void searchMapTiles(int type,double minlatitude, double minlongitude, double maxlatitude, double maxlongitude) {
         MapRoomDatabase.databaseWriteExecutor.execute(() -> {
@@ -64,6 +69,11 @@ public class MapRepository {
     void checkpointDatabase(SimpleSQLiteQuery simpleSQLiteQuery){
         MapRoomDatabase.databaseWriteExecutor.execute(() -> {
             mMapTileDao.checkpoint(simpleSQLiteQuery);
+        });
+    }
+    void checkTileEntry(double latitude, double longitude) {
+        MapRoomDatabase.databaseWriteExecutor.execute(() -> {
+            checkedTile.postValue(mMapTileDao.checkTileEntry(latitude, longitude));
         });
     }
 }

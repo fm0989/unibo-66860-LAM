@@ -187,10 +187,10 @@ public class GatheringService extends Service {
                 e.printStackTrace();
             }
             mediaRecorder.release();
-            maxamp=maxamp*100/80;
             if(maxamp>25 && maxamp<=70){//Bias per adattare il valore alla scala decibel
                 return maxamp - 20;
             }
+            return maxamp;
         }
         return -1;
     }

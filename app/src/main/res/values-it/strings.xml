@@ -3,7 +3,7 @@
     <string name="no_gps_network">Il GPS e la rete del dispositivo devono essere attivi per utilizzare l\'app</string>
     <string name="no_audio_permission">I permessi audio sono necessari per la rilevazione del rumore</string>
     <string name="open_loc_sett">Impostazioni di geolocalizzazione</string>
-    <string name="open_app_sett">Impostazioni dei permessi dell\'app</string>
+    <string name="open_app_sett">Impostazioni permessi app</string>
     <string name="cancel">Cancella</string>
     <string name="back">Indietro</string>
     <string name="settings">Impostazioni</string>
@@ -45,4 +45,10 @@
     <string name="notifchbgdescr">Notifiche in primo piano durante la raccolta dei dati</string>
     <string name="toastdone">FATTO</string>
     <string name="toastdbdeleted">IL TIPO DI DATO SELEZIONATO E` STATO ELIMINATO</string>
+    <string name="untrackedarea">Intervallo di controllo area non analizzata (minuti)</string>
+    <string name="untrackedarea_summ">Tempo del timer prima di verificare se l\'area della posizione corrente è già tracciata (se vuoto o zero il controllo è disabilitato)</string>
+    <string name="notifichuntrackedtitle">Questa area non è stata ancora analizzata</string>
+    <string name="notifichuntracked">CanaleAreeNonAnalizzate</string>
+    <string name="notifichuntrackedtext">Apri l\'app e analizza la nuova area!</string>
+    <string name="notifichuntrackeddescr">Notifica del controllo di aree non ancora analizzate</string>
 </resources>
