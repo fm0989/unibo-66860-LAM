@@ -157,6 +157,8 @@ public class CheckAreaService extends Service {
                 });
 
             }).start();
+        }else{
+            stopSelf();
         }
         return START_STICKY;
     }

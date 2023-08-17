@@ -167,8 +167,6 @@ public class MainActivity extends AppCompatActivity
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapView);
         mapFragment.getMapAsync(this);
-        /* notifiche */
-        checkReport();
     }
 
     private void startGather(){
@@ -440,6 +438,8 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(this, "SOME FUNCTIONS WILL NOT WORK WITHOUT LOCATION PERMISSION", Toast.LENGTH_SHORT).show();
             }
         }
+        /* notifiche */
+        checkReport();
     }
 
     @SuppressLint("MissingPermission")

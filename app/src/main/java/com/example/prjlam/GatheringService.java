@@ -123,6 +123,8 @@ public class GatheringService extends Service {
                 });
             }).start();
 ;
+        }else{
+            stopSelf();
         }
         return START_NOT_STICKY;
 
