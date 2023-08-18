@@ -43,6 +43,7 @@ public class BackgroundReceiver extends BroadcastReceiver {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_DENIED ||
                     !PreferenceManager.getDefaultSharedPreferences(context).getBoolean("bgsampling",false)) {return;}
             createAlarm(context,alarmManager,SAMPLETIME,context.getResources().getString(R.string.gather_action),Utils.REQUEST_CODE_GATHER);
+            createAlarm(context,alarmManager,UNTRACKEDTIME,context.getResources().getString(R.string.gather_action),Utils.REQUEST_CODE_UNTRACKED);
         } else if(context.getResources().getString(R.string.gather_action).equals(intent.getAction())){
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                 PreferenceManager.getDefaultSharedPreferences(context).getBoolean("bgsampling",false)) {

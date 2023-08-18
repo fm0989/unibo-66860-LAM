@@ -276,11 +276,6 @@ public class MainActivity extends AppCompatActivity
             if ((boolean) mypref.get("bgsampling")) {
                 if (!Utils.isBackgroundLocationGranted)
                     Utils.requestMyPermission(this, Utils.BACKGROUND_PERMISSION_REQUEST_CODE, false);
-                else {
-                    //lancio bg receiver
-                    Intent i = new Intent(getApplicationContext(), BackgroundReceiver.class).setAction(getApplicationContext().getResources().getString(R.string.reset_alarm_action));
-                    sendBroadcast(i);
-                }
             }
             if(mypref.get("reportTime") == null){//primo avvio dell'app
                 long reportT = System.currentTimeMillis() + 86400000L * Long.parseLong(defaultPreferences.getString("daysreport", "0"));
@@ -461,6 +456,9 @@ public class MainActivity extends AppCompatActivity
             map.setMyLocationEnabled(false);
             map.getUiSettings().setMyLocationButtonEnabled(false);
             Toast.makeText(this, "SOME FUNCTIONS WILL NOT WORK WITHOUT LOCATION PERMISSION", Toast.LENGTH_SHORT).show();
+        }else if (requestCode == Utils.BACKGROUND_PERMISSION_REQUEST_CODE && Utils.isBackgroundLocationGranted) {
+            Intent i = new Intent(getApplicationContext(), BackgroundReceiver.class).setAction(getApplicationContext().getResources().getString(R.string.reset_alarm_action));
+            sendBroadcast(i);
         }
     }
 }
