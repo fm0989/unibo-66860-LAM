@@ -17,7 +17,7 @@ public class MapTile {
     public int level;
     @NonNull
     @ColumnInfo(name = "type")
-    public int type;
+    public int type;//0-lte 1-wifi 2-noise
     @ColumnInfo(name = "date")
     public long date;
 

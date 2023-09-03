@@ -199,12 +199,20 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onChanged(List<MapTile> mapTiles) {
                         List<LatLng> coords = new ArrayList<>();
+                        int avgLTE=0,avgWifi=0,avgNoise=0;
+                        int nLTE=0,nWifi=0,nNoise=0;
                         //raggruppa dati
                         for (MapTile tile : mapTiles) {
                             if(!coords.contains(new LatLng(tile.latitude,tile.longitude))){
                                 coords.add(new LatLng(tile.latitude,tile.longitude));
                             }
+                            if(tile.type==0){nLTE++;avgLTE+=tile.level;}
+                            if(tile.type==1){nWifi++;avgWifi+=tile.level;}
+                            if(tile.type==2){nNoise++;avgNoise+=tile.level;}
                         }
+                        if(nLTE==0) {nLTE = 1;}
+                        if(nWifi==0) {nWifi = 1;}
+                        if(nNoise==0) {nNoise = 1;}
                         //lancia notifica
                         Log.e("main","lanico notifica");
                         Intent reportIntent = new Intent(getApplicationContext(), MainActivity.class);
@@ -213,7 +221,11 @@ public class MainActivity extends AppCompatActivity
                         Notification notification = new NotificationCompat.Builder(getApplicationContext(), getResources().getString(R.string.notifchreportid))
                                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                                 .setContentTitle(getResources().getString(R.string.notifchreporttitle))
-                                .setContentText(getResources().getString(R.string.notifchreporttext1)+coords.size()+" "+getResources().getString(R.string.notifchreporttext2))
+                                .setStyle(new NotificationCompat.BigTextStyle()
+                                        .bigText(getResources().getString(R.string.notifchreporttext1)+coords.size()+" "+getResources().getString(R.string.notifchreporttext2)
+                                                +"\n"+getResources().getString(R.string.notifchreporttext4)+(avgLTE/nLTE)+"\n"
+                                                +getResources().getString(R.string.notifchreporttext5)+(avgWifi/nWifi)+"\n"
+                                                +getResources().getString(R.string.notifchreporttext6)+(avgNoise/nNoise)))
                                 .build();
                         notificationManager.notify(3,notification);
                         defaultPreferences.edit().putLong("reportTime", System.currentTimeMillis()+86400000L*Integer.parseInt(defaultPreferences.getString("daysreport", "0"))).apply();
@@ -221,8 +233,8 @@ public class MainActivity extends AppCompatActivity
                 });
                 long nowT = System.currentTimeMillis();
                 long reportT = defaultPreferences.getLong("reportTime", 0);
-                Log.d("MAIN REPORT T", String.valueOf(reportT));
-                if (nowT > reportT) {//se la data e' stata superata
+                Log.d("MAIN REPORT T", String.valueOf(nowT) + "  " + String.valueOf(reportT));
+                if (Long.compare(nowT,reportT)>0) {//se la data e' stata superata
                     mTilesViewModel.getNewDiscoveredTiles(reportT);
                 }
             }
@@ -437,7 +449,6 @@ public class MainActivity extends AppCompatActivity
         checkReport();
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

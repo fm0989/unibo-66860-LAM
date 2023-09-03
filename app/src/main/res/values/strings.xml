@@ -38,7 +38,10 @@
     <string name="notifchreportdescr">Notification of the periodic report on the analysis of the new areas</string>
     <string name="notifchreporttitle">Report of data collected from new areas</string>
     <string name="notifchreporttext1">"You have analyzed "</string>
-    <string name="notifchreporttext2"> new areas</string>
+    <string name="notifchreporttext2">" new areas"</string>
+    <string name="notifchreporttext4">"Average LTE levels tracked: "</string>
+    <string name="notifchreporttext5">"Average Wifi levels tracked: "</string>
+    <string name="notifchreporttext6">"Average noise levels tracked: "</string>
     <string name="notifchreporttext3">Open the app to view the results</string>
     <string name="notifichuntrackedid" translatable="false">3</string>
     <string name="notifichuntrackedtitle">This area has not yet been analyzed</string>

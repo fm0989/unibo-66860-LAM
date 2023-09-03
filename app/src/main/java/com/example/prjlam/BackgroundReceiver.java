@@ -89,7 +89,7 @@ public class BackgroundReceiver extends BroadcastReceiver {
                 Log.d("broadcastrcv","reporting");
                 long nowT = System.currentTimeMillis();
                 long reportT = PreferenceManager.getDefaultSharedPreferences(context).getLong("reportTime", 0);
-                if (nowT > reportT) {
+                if (Long.compare(nowT,reportT)>0) {
                     Log.d("broadcastrcv","reported");
                     Intent reportIntent = new Intent(context, MainActivity.class);
                     reportIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

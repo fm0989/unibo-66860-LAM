@@ -51,4 +51,7 @@
     <string name="notifichuntracked">CanaleAreeNonAnalizzate</string>
     <string name="notifichuntrackedtext">Apri l\'app e analizza la nuova area!</string>
     <string name="notifichuntrackeddescr">Notifica del controllo di aree non ancora analizzate</string>
+    <string name="notifchreporttext4">"Livello medio LTE analizzato: "</string>
+    <string name="notifchreporttext5">"Livello medio WIfi analizzato: "</string>
+    <string name="notifchreporttext6">"Livello medio rumore analizzato: "</string>
 </resources>
