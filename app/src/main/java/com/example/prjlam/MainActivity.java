@@ -198,6 +198,13 @@ public class MainActivity extends AppCompatActivity
                 mTilesViewModel.getSearchedRecentTiles().observe(this, new Observer<List<MapTile>>() {
                     @Override
                     public void onChanged(List<MapTile> mapTiles) {
+                        long nowT = System.currentTimeMillis();
+                        long reportT = defaultPreferences.getLong("reportTime", 0);
+                        if (Long.compare(nowT,reportT)<=0) {//se la data e' stata superata
+                            return;
+                        }
+                        defaultPreferences.edit().putLong("reportTime", System.currentTimeMillis()+86400000L*Integer.parseInt(defaultPreferences.getString("daysreport", "0"))).apply();
+                        Log.d("checkreport", String.valueOf(defaultPreferences.getLong("reportTime", 0)));
                         List<LatLng> coords = new ArrayList<>();
                         int avgLTE=0,avgWifi=0,avgNoise=0;
                         int nLTE=0,nWifi=0,nNoise=0;
@@ -228,7 +235,6 @@ public class MainActivity extends AppCompatActivity
                                                 +getResources().getString(R.string.notifchreporttext6)+(avgNoise/nNoise)))
                                 .build();
                         notificationManager.notify(3,notification);
-                        defaultPreferences.edit().putLong("reportTime", System.currentTimeMillis()+86400000L*Integer.parseInt(defaultPreferences.getString("daysreport", "0"))).apply();
                     }
                 });
                 long nowT = System.currentTimeMillis();
