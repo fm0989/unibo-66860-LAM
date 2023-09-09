@@ -54,4 +54,6 @@
     <string name="notifchreporttext4">"Livello medio LTE analizzato: "</string>
     <string name="notifchreporttext5">"Livello medio WIfi analizzato: "</string>
     <string name="notifchreporttext6">"Livello medio rumore analizzato: "</string>
+    <string name="reportt">Notifica prossimo report (millisec)</string>
+    <string name="reportt_summ">Soglia temporale per la notifica del prossimo report</string>
 </resources>

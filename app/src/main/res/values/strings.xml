@@ -66,5 +66,7 @@
     <string name="settreport_summ">Number of days after which to show the report on the new analyzed areas</string>
     <string name="untrackedarea">Untracked area check interval (minutes)</string>
     <string name="untrackedarea_summ">Timer time before checking if current location area is already tracked (if empty or zero check is disabled)</string>
+    <string name="reportt">Next report notification (millisec)</string>
+    <string name="reportt_summ">Time threshold for notification of the next report</string>
 
 </resources>

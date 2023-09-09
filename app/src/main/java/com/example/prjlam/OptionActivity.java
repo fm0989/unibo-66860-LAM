@@ -70,19 +70,22 @@ public class OptionActivity extends AppCompatActivity implements AdapterView.OnI
                     try {
                         if(Integer.parseInt(sharedPreferences.getString(key,"0")) > 0){
                             long reportT = System.currentTimeMillis() + 86400000L * Long.parseLong(sharedPreferences.getString("daysreport", "0"));
-                            defaultPreferences.edit().putLong("reportTime", reportT).apply();
+                            defaultPreferences.edit().putString("reportTime", String.valueOf(reportT)).apply();
                         }else {
-                            defaultPreferences.edit().putLong("reportTime", 0L).apply();
+                            defaultPreferences.edit().putString("reportTime", "0").apply();
                             defaultPreferences.edit().putString("daysreport", "0").apply();
                         }
                     } catch (NumberFormatException nfe) {
                         defaultPreferences.edit().putString("daysreport", "0").apply();
-                        defaultPreferences.edit().putLong("reportTime", 0L).apply();
+                        defaultPreferences.edit().putString("reportTime", "0").apply();
                     }
                 } else if (key.equals("untrackedAreaTime")) {
                     try {
                         if(Integer.parseInt(sharedPreferences.getString(key,"0")) <= 0){
                             defaultPreferences.edit().putString("untrackedAreaTime", "0").apply();
+                        }else {
+                            Intent i = new Intent(getApplicationContext(), BackgroundReceiver.class).setAction(getApplicationContext().getResources().getString(R.string.reset_alarm_action));
+                            sendBroadcast(i);
                         }
                     } catch (NumberFormatException nfe) {
                         defaultPreferences.edit().putString("untrackedAreaTime", "0").apply();

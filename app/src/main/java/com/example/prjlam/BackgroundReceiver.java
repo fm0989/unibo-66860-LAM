@@ -41,9 +41,10 @@ public class BackgroundReceiver extends BroadcastReceiver {
             checkReportNotification(context);
         } else if(context.getResources().getString(R.string.reset_alarm_action).equals(intent.getAction())) {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_DENIED ||
-                    !PreferenceManager.getDefaultSharedPreferences(context).getBoolean("bgsampling",false)) {return;}
+                    !PreferenceManager.getDefaultSharedPreferences(context).getBoolean("bgsampling",false))
+            {return;}
             createAlarm(context,alarmManager,SAMPLETIME,context.getResources().getString(R.string.gather_action),Utils.REQUEST_CODE_GATHER);
-            createAlarm(context,alarmManager,UNTRACKEDTIME,context.getResources().getString(R.string.gather_action),Utils.REQUEST_CODE_UNTRACKED);
+            createAlarm(context,alarmManager,UNTRACKEDTIME,context.getResources().getString(R.string.untracked_action),Utils.REQUEST_CODE_UNTRACKED);
         } else if(context.getResources().getString(R.string.gather_action).equals(intent.getAction())){
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                 PreferenceManager.getDefaultSharedPreferences(context).getBoolean("bgsampling",false)) {
@@ -88,7 +89,7 @@ public class BackgroundReceiver extends BroadcastReceiver {
             if (t > 0) {
                 Log.d("broadcastrcv","reporting");
                 long nowT = System.currentTimeMillis();
-                long reportT = PreferenceManager.getDefaultSharedPreferences(context).getLong("reportTime", 0);
+                long reportT = Long.parseLong(PreferenceManager.getDefaultSharedPreferences(context).getString("reportTime", "0"));
                 if (Long.compare(nowT,reportT)>0) {
                     Log.d("broadcastrcv","reported");
                     Intent reportIntent = new Intent(context, MainActivity.class);
@@ -106,7 +107,7 @@ public class BackgroundReceiver extends BroadcastReceiver {
             }
         } catch (NumberFormatException nfe) {
             PreferenceManager.getDefaultSharedPreferences(context).edit().putString("daysreport", "0").apply();
-            PreferenceManager.getDefaultSharedPreferences(context).edit().putLong("reportTime", 0L).apply();
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putString("reportTime", "0").apply();
             Log.e("BroadcastRcv","daysreport not an integer");
         }
     }

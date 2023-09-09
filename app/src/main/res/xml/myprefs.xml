@@ -35,5 +35,10 @@
             android:key="untrackedAreaTime"
             android:summary="@string/untrackedarea_summ"
             android:title="@string/untrackedarea" />
+        <EditTextPreference
+            android:dialogTitle="@string/reportt"
+            android:key="reportTime"
+            android:summary="@string/reportt_summ"
+            android:title="@string/reportt" />
     </PreferenceCategory>
 </PreferenceScreen>

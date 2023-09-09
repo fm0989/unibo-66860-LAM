@@ -199,12 +199,12 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onChanged(List<MapTile> mapTiles) {
                         long nowT = System.currentTimeMillis();
-                        long reportT = defaultPreferences.getLong("reportTime", 0);
-                        if (Long.compare(nowT,reportT)<=0) {//se la data e' stata superata
+                        long reportT = Long.parseLong(defaultPreferences.getString("reportTime", "0"));
+                        if (Long.compare(nowT,reportT)<=0) {//se la data non e' stata superata
                             return;
                         }
-                        defaultPreferences.edit().putLong("reportTime", System.currentTimeMillis()+86400000L*Integer.parseInt(defaultPreferences.getString("daysreport", "0"))).apply();
-                        Log.d("checkreport", String.valueOf(defaultPreferences.getLong("reportTime", 0)));
+                        defaultPreferences.edit().putString("reportTime", String.valueOf(System.currentTimeMillis()+86400000L*Integer.parseInt(defaultPreferences.getString("daysreport", "0")))).apply();
+                        Log.d("checkreport", String.valueOf(defaultPreferences.getString("reportTime", "0")));
                         List<LatLng> coords = new ArrayList<>();
                         int avgLTE=0,avgWifi=0,avgNoise=0;
                         int nLTE=0,nWifi=0,nNoise=0;
@@ -238,7 +238,9 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
                 long nowT = System.currentTimeMillis();
-                long reportT = defaultPreferences.getLong("reportTime", 0);
+                long reportT = Long.parseLong(defaultPreferences.getString("reportTime", "0"));
+                if(reportT==0)
+                {return;}
                 Log.d("MAIN REPORT T", String.valueOf(nowT) + "  " + String.valueOf(reportT));
                 if (Long.compare(nowT,reportT)>0) {//se la data e' stata superata
                     mTilesViewModel.getNewDiscoveredTiles(reportT);
@@ -246,7 +248,7 @@ public class MainActivity extends AppCompatActivity
             }
         } catch (NumberFormatException nfe) {
             defaultPreferences.edit().putString("daysreport", "0").apply();
-            defaultPreferences.edit().putLong("reportTime", 0L).apply();
+            defaultPreferences.edit().putString("reportTime", "0").apply();
         }
     }
 
@@ -297,7 +299,7 @@ public class MainActivity extends AppCompatActivity
             }
             if(mypref.get("reportTime") == null){//primo avvio dell'app
                 long reportT = System.currentTimeMillis() + 86400000L * Long.parseLong(defaultPreferences.getString("daysreport", "0"));
-                defaultPreferences.edit().putLong("reportTime", reportT).apply();
+                defaultPreferences.edit().putString("reportTime", String.valueOf(reportT)).apply();
             }
         } catch (ClassCastException | NullPointerException e) {
             e.printStackTrace();
